@@ -1,8 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './layout.css'; 
-// import { motion } from 'framer-motion';
-// import { Helmet } from 'react-helmet';
 
 
 const Home = () => {
@@ -20,7 +18,7 @@ const Home = () => {
           </div>
           <div className="hs-collapse hidden overflow-hidden transition-all duration-300 sm:block" id="navbar-collapse-with-animation">
             <div className="flex flex-col gap-y-4 gap-x-0 mt-5 sm:flex-row sm:items-center sm:justify-end sm:gap-y-0 sm:gap-x-7 sm:mt-0 sm:ps-7">
-              <Link to="/" className="font-medium text-white hover:text-orange-500 sm:py-6">Home</Link>
+              <Link to="/home" className="font-medium text-white hover:text-orange-500 sm:py-6">Home</Link>
               <Link to="/upload" className="font-medium text-white hover:text-orange-500 sm:py-6">Upload</Link>
               <Link to="/analyze" className="font-medium text-white hover:text-orange-500 sm:py-6">Analyze Data</Link>
               <Link to="/analysis" className="font-medium text-white hover:text-orange-500 sm:py-6">Data Analysis</Link>
