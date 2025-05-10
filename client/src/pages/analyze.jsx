@@ -41,7 +41,7 @@ const Analyze = () => {
       <header className="bg-black text-white px-6 py-4 flex justify-between items-center border-b border-gray-700">
         <h1 className="text-xl font-bold">Forcastica</h1>
         <nav className="space-x-4">
-          <Link to="/home" className="hover:text-orange-400">Home</Link>
+          <Link to="/" className="hover:text-orange-400">Home</Link>
           <Link to="/upload" className="hover:text-orange-400">Upload</Link>
           <Link to="/analyze" className="hover:text-orange-400">Analyze</Link>
           <Link to="/analysis" className="hover:text-orange-400">Results</Link>
