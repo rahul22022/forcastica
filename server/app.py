@@ -38,6 +38,44 @@ def apply_cors_headers(response):
 def home():
     return "🚀 Forcastica Flask API ready."
 
+@app.route('/current-data')
+def get_current_data():
+    global stored_df
+    if stored_df is None:
+        return jsonify({'error': 'No data available'}), 400
+    return jsonify({'data': stored_df.to_dict()}), 200
+
+@app.route('/remove-columns', methods=['POST'])
+def remove_columns():
+    global stored_df
+    if stored_df is None:
+        return jsonify({'error': 'No data available'}), 400
+    
+    data = request.json
+    columns = data.get('columns', [])
+    
+    stored_df = stored_df.drop(columns=columns)
+    return jsonify({'data': stored_df.to_dict(), 'message': 'Columns removed successfully'}), 200
+
+@app.route('/handle-nulls', methods=['POST'])
+def handle_nulls():
+    global stored_df
+    if stored_df is None:
+        return jsonify({'error': 'No data available'}), 400
+    
+    data = request.json
+    columns = data.get('columns', [])
+    action = data.get('action')
+    
+    if action == 'remove':
+        stored_df = stored_df.dropna(subset=columns)
+    elif action == 'mean':
+        stored_df[columns] = stored_df[columns].fillna(stored_df[columns].mean())
+    elif action == 'mode':
+        stored_df[columns] = stored_df[columns].fillna(stored_df[columns].mode().iloc[0])
+    
+    return jsonify({'data': stored_df.to_dict(), 'message': 'Null values handled successfully'}), 200
+
 
 @app.route('/upload', methods=['POST', 'OPTIONS'])
 def upload_file():

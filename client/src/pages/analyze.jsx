@@ -44,7 +44,7 @@ const Analyze = () => {
           <Link to="/" className="hover:text-orange-400">Home</Link>
           <Link to="/upload" className="hover:text-orange-400">Upload</Link>
           <Link to="/analyze" className="hover:text-orange-400">Analyze</Link>
-          <Link to="/analysis" className="hover:text-orange-400">Results</Link>
+          <Link to="/analysis" className="hover:text-orange-400">Data Analysis</Link>
         </nav>
       </header>
 
