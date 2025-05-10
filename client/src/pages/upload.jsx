@@ -110,7 +110,7 @@ const [nullCounts, setNullCounts] = useState(null);
           <>
             <div className="mb-8">
               <h3 className="text-xl font-semibold mb-4">Data Analysis</h3>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="bg-white p-6 rounded-lg shadow-md">
                   <h4 className="text-lg font-medium mb-3">Dataset Info</h4>
@@ -118,7 +118,7 @@ const [nullCounts, setNullCounts] = useState(null);
                     {info}
                   </pre>
                 </div>
-                
+
                 <div className="bg-white p-6 rounded-lg shadow-md">
                   <h4 className="text-lg font-medium mb-3">Null Value Counts</h4>
                   <div className="space-y-2">
@@ -137,29 +137,30 @@ const [nullCounts, setNullCounts] = useState(null);
 
             <h3 className="text-xl font-semibold mb-4">Data Preview (First 10 Records)</h3>
             <div className="overflow-auto max-h-[500px] border border-gray-300 rounded-lg">
-            <table className="min-w-full table-auto text-sm">
-              <thead className="bg-gray-200 sticky top-0 z-10">
-                <tr>
-                  {Object.keys(fileRecords[0]).map((key) => (
-                    <th key={key} className="border px-4 py-2 text-left">{key}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {fileRecords.map((row, rowIndex) => (
-                  <tr key={rowIndex} className="even:bg-gray-50">
-                    {Object.values(row).map((value, colIndex) => (
-                      <td key={colIndex} className="border px-4 py-1 whitespace-nowrap">
-                        {typeof value === 'string' && value.length > 60
-                          ? value.slice(0, 60) + '...'
-                          : value}
-                      </td>
+              <table className="min-w-full table-auto text-sm">
+                <thead className="bg-gray-200 sticky top-0 z-10">
+                  <tr>
+                    {Object.keys(fileRecords[0]).map((key) => (
+                      <th key={key} className="border px-4 py-2 text-left">{key}</th>
                     ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {fileRecords.map((row, rowIndex) => (
+                    <tr key={rowIndex} className="even:bg-gray-50">
+                      {Object.values(row).map((value, colIndex) => (
+                        <td key={colIndex} className="border px-4 py-1 whitespace-nowrap">
+                          {typeof value === 'string' && value.length > 60
+                            ? value.slice(0, 60) + '...'
+                            : value}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         ) : (
           <p className="text-sm text-gray-500 mt-4">No records to display.</p>
         )}
