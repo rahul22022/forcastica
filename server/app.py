@@ -10,7 +10,7 @@ import seaborn as sns
 
 # === Flask Setup ===
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})  # Enable CORS for all routes
+CORS(app, resources={r"/*": {"origins": ["http://localhost:3000", "https://*.replit.dev"]}})  # Enable CORS for all routes
 
 UPLOAD_FOLDER = 'uploads'
 IMAGES_FOLDER = 'images'
