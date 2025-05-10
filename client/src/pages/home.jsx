@@ -49,8 +49,47 @@ const Home = () => {
         </div>
       </section>
 
-    {/* Footer */}
-      <footer className="bg-black text-gray-400 py-8 border-t border-gray-600 mt-auto">
+    {/* Testimonials Carousel */}
+      <section className="bg-gray-900 py-12">
+        <div className="max-w-screen-2xl mx-auto px-4 md:px-8">
+          <h2 className="text-3xl font-bold text-center text-white mb-8">What Our Clients Say</h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="bg-gray-800 p-6 rounded-lg">
+              <div className="flex items-center mb-4">
+                <img src="https://i.pravatar.cc/60?img=1" alt="Client" className="w-12 h-12 rounded-full" />
+                <div className="ml-4">
+                  <h3 className="text-white font-semibold">Sarah Johnson</h3>
+                  <p className="text-gray-400">Data Scientist, TechCorp</p>
+                </div>
+              </div>
+              <p className="text-gray-300">"Forcastica has revolutionized how we handle data analysis. The insights we've gained have been invaluable for our business decisions."</p>
+            </div>
+            <div className="bg-gray-800 p-6 rounded-lg">
+              <div className="flex items-center mb-4">
+                <img src="https://i.pravatar.cc/60?img=2" alt="Client" className="w-12 h-12 rounded-full" />
+                <div className="ml-4">
+                  <h3 className="text-white font-semibold">Michael Chen</h3>
+                  <p className="text-gray-400">Analytics Lead, InnovateCo</p>
+                </div>
+              </div>
+              <p className="text-gray-300">"The machine learning models provided by Forcastica have helped us improve our forecasting accuracy by 85%. Exceptional results!"</p>
+            </div>
+            <div className="bg-gray-800 p-6 rounded-lg">
+              <div className="flex items-center mb-4">
+                <img src="https://i.pravatar.cc/60?img=3" alt="Client" className="w-12 h-12 rounded-full" />
+                <div className="ml-4">
+                  <h3 className="text-white font-semibold">Emily Rodriguez</h3>
+                  <p className="text-gray-400">CEO, DataDrive</p>
+                </div>
+              </div>
+              <p className="text-gray-300">"The ease of use and powerful features make Forcastica stand out. It's become an essential tool for our data analysis workflow."</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-black text-gray-400 py-8 border-t border-gray-600">
         <div className="max-w-screen-2xl mx-auto px-4 md:px-8">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
