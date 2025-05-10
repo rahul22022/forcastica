@@ -62,12 +62,12 @@ def upload_file():
 
         # Ensure upload directory exists
         os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-            
+
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-        
+
         # Ensure upload directory exists
         os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-        
+
         try:
             file.save(file_path)
         except Exception as e:
@@ -80,19 +80,19 @@ def upload_file():
 
         if df.empty:
             return jsonify({'error': 'The CSV file is empty'}), 400
-            
+
         stored_df = df
 
         # Generate data analysis
         info_buffer = io.StringIO()
         df.info(buf=info_buffer)
         info_str = info_buffer.getvalue()
-        
+
         # Convert any non-string data to string format for JSON serialization
         df_preview = df.head(10).copy()
         for column in df_preview.columns:
             df_preview[column] = df_preview[column].astype(str)
-            
+
         analysis = {
             'num_records': len(df),
             'columns': df.columns.tolist(),
@@ -102,10 +102,21 @@ def upload_file():
             'preview': df_preview.to_dict(orient='records')
         }
 
+        # Convert NaN values to None (null in JSON) before sending
+        def clean_nan(obj):
+            if isinstance(obj, dict):
+                return {k: clean_nan(v) for k, v in obj.items()}
+            elif isinstance(obj, list):
+                return [clean_nan(x) for x in obj]
+            elif pd.isna(obj):
+                return None
+            return obj
+
+        cleaned_analysis = clean_nan(analysis)
         return jsonify({
             'filename': file.filename,
             'size': os.path.getsize(file_path),
-            'analysis': analysis,
+            'analysis': cleaned_analysis,
             'message': 'File uploaded successfully!'
         })
 

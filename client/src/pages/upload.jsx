@@ -40,7 +40,10 @@ const Upload = () => {
       });
 
       if (response.ok) {
-        const data = await response.json();
+        const text = await response.text();
+        let data;
+        try {
+          data = JSON.parse(text);
         setResponseMessage(data.message || 'Upload successful');
 
         setFileDetails({
@@ -48,6 +51,11 @@ const Upload = () => {
           size: (uploadedFile.size / 1024).toFixed(2),
         });
 
+        } catch (parseError) {
+          console.error('JSON Parse error:', parseError, 'Response:', text);
+          throw new Error('Failed to parse server response');
+        }
+        
         if (data.analysis) {
           setFileRecords(data.analysis.preview || []);
           setInfo(data.analysis.info || '');
