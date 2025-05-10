@@ -163,9 +163,12 @@ const Upload = () => {
       formData.append('file', uploadedFile);
 
       try {
-        const response = await fetch('http://127.0.0.1:5000/upload', {
+        const response = await fetch('/upload', {
           method: 'POST',
           body: formData,
+          headers: {
+            'Accept': 'application/json',
+          },
         });
 
         if (response.ok) {

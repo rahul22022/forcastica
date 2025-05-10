@@ -53,10 +53,16 @@ def upload_file():
         return jsonify({'error': 'No selected file'}), 400
 
     try:
+        if not file.filename.endswith('.csv'):
+            return jsonify({'error': 'Only CSV files are allowed'}), 400
+            
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
         file.save(file_path)
 
         df = pd.read_csv(file_path)
+        if df.empty:
+            return jsonify({'error': 'The CSV file is empty'}), 400
+            
         stored_df = df
 
         num_records = len(df)
