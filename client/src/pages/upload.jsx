@@ -152,11 +152,10 @@ const [nullCounts, setNullCounts] = useState(null);
                 <tbody>
                   {fileRecords.map((row, rowIndex) => (
                     <tr key={rowIndex} className="even:bg-gray-50">
-                      {Object.values(row).map((value, colIndex) => (
+                      {Object.entries(row).map(([key, value], colIndex) => (
                         <td key={colIndex} className="border px-4 py-1 whitespace-nowrap">
-                          {typeof value === 'string' && value.length > 60
-                            ? value.slice(0, 60) + '...'
-                            : value}
+                          {value === null || value === undefined ? 'N/A' : 
+                           String(value).length > 60 ? String(value).slice(0, 60) + '...' : value}
                         </td>
                       ))}
                     </tr>

@@ -82,16 +82,19 @@ def upload_file():
         df.info(buf=info_buffer)
         info_str = info_buffer.getvalue()
         
+        # Convert any non-string data to string format for JSON serialization
+        df_preview = df.head(10).copy()
+        for column in df_preview.columns:
+            df_preview[column] = df_preview[column].astype(str)
+            
         analysis = {
             'num_records': len(df),
             'columns': df.columns.tolist(),
             'info': info_str,
             'describe': df.describe(include='all').to_dict(),
             'null_counts': df.isnull().sum().to_dict(),
-            'preview': df.head(10).to_dict(orient='records')
+            'preview': df_preview.to_dict(orient='records')
         }
-        column_names = df.columns.tolist()
-        records = df.head(100).to_dict(orient='records')
 
         return jsonify({
             'filename': file.filename,
