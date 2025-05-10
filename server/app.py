@@ -178,11 +178,24 @@ def upload_file():
                 return None
             return obj
 
+        def convert_np_values(obj):
+            if isinstance(obj, dict):
+                return {k: convert_np_values(v) for k, v in obj.items()}
+            elif isinstance(obj, list):
+                return [convert_np_values(x) for x in obj]
+            elif pd.api.types.is_integer_dtype(type(obj)):
+                return int(obj)
+            elif pd.isna(obj):
+                return None
+            return obj
+
         cleaned_analysis = clean_nan(analysis)
+        converted_analysis = convert_np_values(cleaned_analysis)
+        
         return jsonify({
             'filename': file.filename,
-            'size': os.path.getsize(file_path),
-            'analysis': cleaned_analysis,
+            'size': int(os.path.getsize(file_path)),  # Convert to standard int
+            'analysis': converted_analysis,
             'message': 'File uploaded successfully!'
         })
 
