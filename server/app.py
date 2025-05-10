@@ -88,17 +88,28 @@ def upload_file():
         df.info(buf=info_buffer)
         info_str = info_buffer.getvalue()
 
-        # Convert any non-string data to string format for JSON serialization
+        # Format numeric columns
         df_preview = df.head(10).copy()
         for column in df_preview.columns:
-            df_preview[column] = df_preview[column].astype(str)
+            if df_preview[column].dtype in ['float64', 'int64']:
+                df_preview[column] = df_preview[column].apply(lambda x: f"{x:,.2f}" if isinstance(x, float) else f"{x:,}")
+            else:
+                df_preview[column] = df_preview[column].astype(str)
+
+        # Get column types for frontend formatting
+        column_types = {col: str(df[col].dtype) for col in df.columns}
 
         analysis = {
-            'num_records': len(df),
+            'num_records': f"{len(df):,}",
             'columns': df.columns.tolist(),
+            'column_types': column_types,
             'info': info_str,
-            'describe': df.describe(include='all').to_dict(),
-            'null_counts': df.isnull().sum().to_dict(),
+            'describe': {
+                col: {k: f"{v:,.2f}" if isinstance(v, float) else str(v) 
+                     for k, v in stats.items()}
+                for col, stats in df.describe(include='all').to_dict().items()
+            },
+            'null_counts': {col: f"{count:,}" for col, count in df.isnull().sum().to_dict().items()},
             'preview': df_preview.to_dict(orient='records')
         }
 

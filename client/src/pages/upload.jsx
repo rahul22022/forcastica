@@ -153,22 +153,32 @@ const Upload = () => {
             </div>
 
             <h3 className="text-xl font-semibold mb-4">Data Preview (First 10 Records)</h3>
-            <div className="overflow-auto max-h-[500px] border border-gray-300 rounded-lg">
+            <div className="overflow-auto max-h-[500px] border border-gray-300 rounded-lg shadow-lg">
               <table className="min-w-full table-auto text-sm">
-                <thead className="bg-gray-200 sticky top-0 z-10">
+                <thead className="bg-gray-800 text-white sticky top-0 z-10">
                   <tr>
                     {Object.keys(fileRecords[0]).map((key) => (
-                      <th key={key} className="border px-4 py-2 text-left">{key}</th>
+                      <th key={key} className="border border-gray-600 px-4 py-3 text-left font-semibold">
+                        {key}
+                      </th>
                     ))}
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="bg-white">
                   {fileRecords.map((row, rowIndex) => (
-                    <tr key={rowIndex} className="even:bg-gray-50">
+                    <tr key={rowIndex} className="hover:bg-gray-50 transition-colors duration-150">
                       {Object.entries(row).map(([key, value], colIndex) => (
-                        <td key={colIndex} className="border px-4 py-1 whitespace-nowrap">
-                          {value === null || value === undefined ? 'N/A' : 
-                           String(value).length > 60 ? String(value).slice(0, 60) + '...' : value}
+                        <td key={colIndex} className="border px-4 py-2 font-mono text-right">
+                          {value === null || value === undefined ? 
+                            <span className="text-gray-400">N/A</span> : 
+                            value.toString().match(/^-?\d+\.?\d*$/) ?
+                              <span className="text-blue-600">{value}</span> :
+                              <span className="text-gray-700 text-left">{
+                                String(value).length > 60 ? 
+                                String(value).slice(0, 60) + '...' : 
+                                value
+                              }</span>
+                          }
                         </td>
                       ))}
                     </tr>
