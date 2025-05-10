@@ -62,3 +62,7 @@ args = "cd client && npm start"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "cd server && python app.py"
+
+[[ports]]
+localPort = 3000
+externalPort = 80
