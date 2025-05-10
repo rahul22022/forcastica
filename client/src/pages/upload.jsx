@@ -34,6 +34,10 @@ const [nullCounts, setNullCounts] = useState(null);
       
       const formData = new FormData();
       formData.append('file', uploadedFile);
+    } catch (error) {
+      console.error('Error handling file:', error);
+      setResponseMessage('Error handling file upload');
+      setFile(null);
 
       try {
         const response = await fetch('/upload', {
