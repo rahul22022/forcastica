@@ -270,7 +270,7 @@ const Upload = () => {
       </section>
       <button
   onClick={async () => {
-    const response = await fetch('http://127.0.0.1:5000/analyze');
+    const response = await fetch('/analyze');
     if (response.ok) {
       // window.location.href = '/analyze'; 
       navigate('/analyze');
