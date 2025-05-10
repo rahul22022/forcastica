@@ -161,7 +161,8 @@ const [nullCounts, setNullCounts] = useState(null);
               </table>
             </div>
           </>
-        ) : (
+        ) 
+          : (
           <p className="text-sm text-gray-500 mt-4">No records to display.</p>
         )}
       </section>
