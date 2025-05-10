@@ -6,6 +6,25 @@ const ModelSelection = () => {
   const [predictionType, setPredictionType] = useState('');
   const [targetVariable, setTargetVariable] = useState('');
   const [message, setMessage] = useState('');
+  const [analysisData, setAnalysisData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAnalysis = async () => {
+      try {
+        const response = await fetch('/analyze-data');
+        if (response.ok) {
+          const data = await response.json();
+          setAnalysisData(data);
+        }
+      } catch (error) {
+        setMessage('Error fetching analysis: ' + error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAnalysis();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,7 +63,27 @@ const ModelSelection = () => {
       </header>
 
       <main className="flex-grow p-6">
-        <div className="max-w-2xl mx-auto bg-white rounded-lg shadow p-6">
+        {loading ? (
+          <div className="text-center">
+            <p>Loading analysis...</p>
+          </div>
+        ) : (
+          <>
+            <div className="max-w-7xl mx-auto mb-8">
+              <h2 className="text-2xl font-bold mb-6">Data Analysis</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {analysisData?.plots.map((plot) => (
+                  <div key={plot} className="bg-white rounded-lg shadow p-4">
+                    <img 
+                      src={`/images/${plot}`} 
+                      alt={plot} 
+                      className="w-full h-auto"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="max-w-2xl mx-auto bg-white rounded-lg shadow p-6">
           <h2 className="text-2xl font-bold mb-6">Model Selection</h2>
           
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -92,6 +131,8 @@ const ModelSelection = () => {
             </div>
           )}
         </div>
+          </>
+        )}
       </main>
 
       <footer className="bg-black text-gray-400 py-8 border-t border-gray-600">

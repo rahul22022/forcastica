@@ -49,6 +49,37 @@ def home():
     return "🚀 Forcastica Flask API ready."
 
 
+@app.route('/analyze-data', methods=['GET'])
+def analyze_data():
+    global stored_df
+    if stored_df is None:
+        return jsonify({'error': 'No data available'}), 400
+        
+    # Convert categorical columns to numeric
+    for column in stored_df.select_dtypes(include='object').columns:
+        stored_df[column] = stored_df[column].astype('category').cat.codes
+        
+    # Generate correlation matrix
+    correlation_matrix = stored_df.corr()
+    
+    # Create plots
+    plt.figure(figsize=(12, 8))
+    sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm')
+    heatmap_path = os.path.join(IMAGES_FOLDER, 'correlation_heatmap.png')
+    plt.savefig(heatmap_path)
+    plt.close()
+    
+    # Generate pairplot
+    sns.pairplot(stored_df)
+    pairplot_path = os.path.join(IMAGES_FOLDER, 'pairplot.png')
+    plt.savefig(pairplot_path)
+    plt.close()
+    
+    return jsonify({
+        'correlation_matrix': correlation_matrix.to_dict(),
+        'plots': ['correlation_heatmap.png', 'pairplot.png']
+    })
+
 @app.route('/select-model', methods=['POST'])
 def select_model():
     global stored_df
