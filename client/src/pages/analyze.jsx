@@ -80,8 +80,27 @@ const Analyze = () => {
         )}
       </main>
 
-      <footer className="bg-black text-gray-400 text-center text-sm py-6 border-t border-gray-600">
-        &copy; {new Date().getFullYear()} Forcastica — Predicting your future from your data.
+      <footer className="bg-black text-gray-400 py-8 border-t border-gray-600">
+        <div className="max-w-screen-2xl mx-auto px-4 md:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+              <h3 className="text-white font-bold mb-4">Forcastica</h3>
+              <p className="mb-2">RudraTech LLC</p>
+              <p className="mb-2">Registered in Virginia</p>
+              <p>www.forcastica.com</p>
+            </div>
+            <div>
+              <h3 className="text-white font-bold mb-4">Contact</h3>
+              <p className="mb-2">info@forcastica.com</p>
+              <p className="mb-2">Virginia, USA</p>
+            </div>
+            <div>
+              <h3 className="text-white font-bold mb-4">Legal</h3>
+              <p className="mb-2">© {new Date().getFullYear()} RudraTech LLC</p>
+              <p>All rights reserved</p>
+            </div>
+          </div>
+        </div>
       </footer>
     </div>
   );
