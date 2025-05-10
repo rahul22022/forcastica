@@ -23,6 +23,7 @@ const Analyze = () => {
         }
 
         const imageUrls = data.images.map(filename => `/images/${filename}`);
+        console.log('Found images:', imageUrls);
         setImages(imageUrls);
       } catch (err) {
         console.error('Error:', err.message);

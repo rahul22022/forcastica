@@ -275,8 +275,12 @@ const Upload = () => {
   onClick={async () => {
     const response = await fetch('/analyze');
     if (response.ok) {
-      // window.location.href = '/analyze'; 
-      navigate('/analyze');
+      const data = await response.json();
+      if (data.images && data.images.length > 0) {
+        navigate('/analyze');
+      } else {
+        alert('No statistics were generated. Please upload a file first.');
+      }
 
       // Navigate to analysis page
     } else {
