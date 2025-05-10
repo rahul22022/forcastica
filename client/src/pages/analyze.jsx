@@ -40,7 +40,7 @@ const Analyze = () => {
     <div className="min-h-screen flex flex-col bg-gray-100">
       <header className="bg-black text-white px-6 py-4 flex justify-between items-center border-b border-gray-700">
         <Link to="/" className="flex items-center gap-2">
-          <img src="/forcastica_logo.png" alt="Forcastica Logo" className="h-6 w-auto" />
+          <img src="/forcastica_logo.png" alt="Forcastica Logo" className="h-10 w-auto" />
         </Link>
         <nav className="space-x-4">
           <Link to="/" className="hover:text-orange-400">Home</Link>
