@@ -85,7 +85,7 @@ const Upload = () => {
       {/* Header */}
       <header className="font-energetic min-h-[60px] flex flex-wrap justify-between items-center px-6 bg-black text-white text-sm py-3 border-b border-gray-600">
         <Link to="/" className="flex items-center gap-2">
-              <img src="/forcastica_logo.png" alt="Forcastica Logo" className="h-10 w-auto" />
+              <img src="/forcastica_logo.png" alt="Forcastica Logo" className="h-6 w-auto" />
             </Link>
         <nav className="space-x-4">
           <Link to="/" className="text-white hover:text-orange-500">Home</Link>

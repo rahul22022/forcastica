@@ -13,7 +13,7 @@ const Home = () => {
         <nav aria-label="Global" className="relative max-w-screen-2xl w-full mx-auto px-4 sm:flex sm:items-center sm:justify-between sm:px-6 lg:px-8">
           <div className="flex items-center justify-between flex-grow-1">
             <Link to="/" className="flex items-center gap-2">
-              <img src="/forcastica_logo.png" alt="Forcastica Logo" className="h-10 w-auto" />
+              <img src="/forcastica_logo.png" alt="Forcastica Logo" className="h-6 w-auto" />
             </Link>
           </div>
           <div className="hs-collapse hidden overflow-hidden transition-all duration-300 sm:block" id="navbar-collapse-with-animation">
