@@ -12,6 +12,8 @@ const Upload = () => {
   const [responseMessage, setResponseMessage] = useState('');
   const [fileDetails, setFileDetails] = useState(null);
   const [fileRecords, setFileRecords] = useState([]);
+const [info, setInfo] = useState('');
+const [nullCounts, setNullCounts] = useState(null);
   const navigate = useNavigate();
 
   const handleFileChange = async (event) => {
@@ -40,8 +42,10 @@ const Upload = () => {
             size: (uploadedFile.size / 1024).toFixed(2),
           });
 
-          if (data.records && Array.isArray(data.records)) {
-            setFileRecords(data.records.slice(0, 100));
+          if (data.analysis) {
+            setFileRecords(data.analysis.preview || []);
+            setInfo(data.analysis.info || '');
+            setNullCounts(data.analysis.null_counts || {});
           } else {
             setFileRecords([]);
           }
@@ -102,8 +106,37 @@ const Upload = () => {
           </div>
         )}
 
-        {fileRecords.length > 0 ? (
-          <div className="overflow-auto max-h-[500px] border border-gray-300 rounded-lg mt-6">
+        {fileRecords && fileRecords.length > 0 && (
+          <>
+            <div className="mb-8">
+              <h3 className="text-xl font-semibold mb-4">Data Analysis</h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-white p-6 rounded-lg shadow-md">
+                  <h4 className="text-lg font-medium mb-3">Dataset Info</h4>
+                  <pre className="text-sm bg-gray-50 p-4 rounded overflow-auto">
+                    {info}
+                  </pre>
+                </div>
+                
+                <div className="bg-white p-6 rounded-lg shadow-md">
+                  <h4 className="text-lg font-medium mb-3">Null Value Counts</h4>
+                  <div className="space-y-2">
+                    {Object.entries(nullCounts || {}).map(([col, count]) => (
+                      <div key={col} className="flex justify-between">
+                        <span>{col}:</span>
+                        <span className={count > 0 ? 'text-red-500' : 'text-green-500'}>
+                          {count}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <h3 className="text-xl font-semibold mb-4">Data Preview (First 10 Records)</h3>
+            <div className="overflow-auto max-h-[500px] border border-gray-300 rounded-lg">
             <table className="min-w-full table-auto text-sm">
               <thead className="bg-gray-200 sticky top-0 z-10">
                 <tr>

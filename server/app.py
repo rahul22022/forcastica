@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, send_from_directory, make_response
 from flask_cors import CORS
 import os
+import io
 import pandas as pd
 import matplotlib
 
@@ -65,16 +66,26 @@ def upload_file():
             
         stored_df = df
 
-        num_records = len(df)
+        # Generate data analysis
+        info_buffer = io.StringIO()
+        df.info(buf=info_buffer)
+        info_str = info_buffer.getvalue()
+        
+        analysis = {
+            'num_records': len(df),
+            'columns': df.columns.tolist(),
+            'info': info_str,
+            'describe': df.describe(include='all').to_dict(),
+            'null_counts': df.isnull().sum().to_dict(),
+            'preview': df.head(10).to_dict(orient='records')
+        }
         column_names = df.columns.tolist()
         records = df.head(100).to_dict(orient='records')
 
         return jsonify({
             'filename': file.filename,
             'size': os.path.getsize(file_path),
-            'num_records': num_records,
-            'column_names': column_names,
-            'records': records,
+            'analysis': analysis,
             'message': 'File uploaded successfully!'
         })
 
