@@ -57,6 +57,9 @@ def upload_file():
         if not file.filename.endswith('.csv'):
             return jsonify({'error': 'Only CSV files are allowed'}), 400
 
+        if file.content_length > 10 * 1024 * 1024:  # 10MB limit
+            return jsonify({'error': 'File size exceeds 10MB limit'}), 400
+
         # Ensure upload directory exists
         os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
             

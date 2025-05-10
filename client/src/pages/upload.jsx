@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './layout.css';
@@ -20,7 +19,7 @@ const Upload = () => {
         setResponseMessage('Please select a file');
         return;
       }
-      
+
       if (!uploadedFile.name.endsWith('.csv')) {
         setResponseMessage('Please select a CSV file');
         return;
@@ -28,7 +27,7 @@ const Upload = () => {
 
       setFile(uploadedFile);
       setResponseMessage('Uploading file...');
-      
+
       const formData = new FormData();
       formData.append('file', uploadedFile);
 
@@ -62,14 +61,15 @@ const Upload = () => {
         setFileRecords([]);
       }
     } catch (error) {
-      console.error('Upload error:', error);
-      const errorMessage = error.response?.data?.error || 'An error occurred while uploading the file.';
-      setResponseMessage(errorMessage);
-      setFileRecords([]);
-      setFileDetails(null);
-      setInfo('');
-      setNullCounts(null);
-    }
+        console.error('Upload error:', error);
+        const errorMessage = error.response?.data?.error || 
+          (error.message ? `Upload failed: ${error.message}` : 'An error occurred while uploading the file.');
+        setResponseMessage(errorMessage);
+        setFileRecords([]);
+        setFileDetails(null);
+        setInfo('');
+        setNullCounts(null);
+      }
   };
 
   return (
