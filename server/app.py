@@ -11,7 +11,12 @@ import seaborn as sns
 
 # === Flask Setup ===
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": ["http://localhost:3000", "https://*.replit.dev"]}})  # Enable CORS for all routes
+CORS(app,
+     resources={
+         r"/*": {
+             "origins": ["http://localhost:3000", "https://*.replit.dev"]
+         }
+     })  # Enable CORS for all routes
 
 UPLOAD_FOLDER = 'uploads'
 IMAGES_FOLDER = 'images'
@@ -24,21 +29,25 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # === Global DataFrame ===
 stored_df = None
 
+
 # === Apply CORS Headers to All Responses ===
 @app.after_request
 def apply_cors_headers(response):
     response.headers['Access-Control-Allow-Origin'] = '*'
-    response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
+    response.headers[
+        'Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
     response.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'
     return response
 
 
 import yaml
 
+
 # === Routes ===
 @app.route('/')
 def home():
     return "🚀 Forcastica Flask API ready."
+
 
 @app.route('/select-model', methods=['POST'])
 def select_model():
@@ -51,7 +60,10 @@ def select_model():
     target_variable = data.get('targetVariable')
 
     if target_variable not in stored_df.columns:
-        return jsonify({'error': f'Target variable {target_variable} not found in dataset'}), 400
+        return jsonify({
+            'error':
+            f'Target variable {target_variable} not found in dataset'
+        }), 400
 
     try:
         # Load appropriate model configuration
@@ -62,21 +74,27 @@ def select_model():
         # Select best model based on data characteristics
         if prediction_type == 'classification':
             if stored_df[target_variable].nunique() == 2:
-                selected_model = next(m for m in models['models'] if m['name'] == 'Logistic Regression')
+                selected_model = next(m for m in models['models']
+                                      if m['name'] == 'Logistic Regression')
             else:
-                selected_model = next(m for m in models['models'] if m['name'] == 'Random Forest')
+                selected_model = next(m for m in models['models']
+                                      if m['name'] == 'Random Forest')
         else:
             if stored_df.index.dtype.name == 'datetime64[ns]':
-                selected_model = next(m for m in models['time_series_models'] if m['name'] == 'SARIMA')
+                selected_model = next(m for m in models['time_series_models']
+                                      if m['name'] == 'SARIMA')
             else:
-                selected_model = next(m for m in models['time_series_models'] if m['name'] == 'Prophet')
+                selected_model = next(m for m in models['time_series_models']
+                                      if m['name'] == 'Prophet')
 
         return jsonify({
-            'message': f'Selected model: {selected_model["name"]}\nDescription: {selected_model["description"]}\nParameters: {selected_model["parameters"]}'
+            'message':
+            f'Selected model: {selected_model["name"]}\nDescription: {selected_model["description"]}\nParameters: {selected_model["parameters"]}'
         })
 
     except Exception as e:
         return jsonify({'error': f'Error selecting model: {str(e)}'}), 500
+
 
 @app.route('/current-data')
 def get_current_data():
@@ -85,36 +103,46 @@ def get_current_data():
         return jsonify({'error': 'No data available'}), 400
     return jsonify({'data': stored_df.to_dict()}), 200
 
+
 @app.route('/remove-columns', methods=['POST'])
 def remove_columns():
     global stored_df
     if stored_df is None:
         return jsonify({'error': 'No data available'}), 400
-    
+
     data = request.json
     columns = data.get('columns', [])
-    
+
     stored_df = stored_df.drop(columns=columns)
-    return jsonify({'data': stored_df.to_dict(), 'message': 'Columns removed successfully'}), 200
+    return jsonify({
+        'data': stored_df.to_dict(),
+        'message': 'Columns removed successfully'
+    }), 200
+
 
 @app.route('/handle-nulls', methods=['POST'])
 def handle_nulls():
     global stored_df
     if stored_df is None:
         return jsonify({'error': 'No data available'}), 400
-    
+
     data = request.json
     columns = data.get('columns', [])
     action = data.get('action')
-    
+
     if action == 'remove':
         stored_df = stored_df.dropna(subset=columns)
     elif action == 'mean':
-        stored_df[columns] = stored_df[columns].fillna(stored_df[columns].mean())
+        stored_df[columns] = stored_df[columns].fillna(
+            stored_df[columns].mean())
     elif action == 'mode':
-        stored_df[columns] = stored_df[columns].fillna(stored_df[columns].mode().iloc[0])
-    
-    return jsonify({'data': stored_df.to_dict(), 'message': 'Null values handled successfully'}), 200
+        stored_df[columns] = stored_df[columns].fillna(
+            stored_df[columns].mode().iloc[0])
+
+    return jsonify({
+        'data': stored_df.to_dict(),
+        'message': 'Null values handled successfully'
+    }), 200
 
 
 @app.route('/upload', methods=['POST', 'OPTIONS'])
@@ -154,7 +182,8 @@ def upload_file():
         try:
             df = pd.read_csv(file_path)
         except Exception as e:
-            return jsonify({'error': f'Failed to read CSV file: {str(e)}'}), 400
+            return jsonify({'error':
+                            f'Failed to read CSV file: {str(e)}'}), 400
 
         if df.empty:
             return jsonify({'error': 'The CSV file is empty'}), 400
@@ -166,7 +195,7 @@ def upload_file():
             total_count = len(df)
             unique_ratio = unique_count / total_count
             is_unique_identifier = unique_ratio > 0.9  # 90% unique values threshold
-            
+
             unique_analysis[column] = {
                 'unique_count': unique_count,
                 'total_count': total_count,
@@ -186,7 +215,9 @@ def upload_file():
         df_preview = df.head(10).copy()
         for column in df_preview.columns:
             if df_preview[column].dtype in ['float64', 'int64']:
-                df_preview[column] = df_preview[column].apply(lambda x: f"{x:,.2f}" if isinstance(x, float) else f"{x:,}")
+                df_preview[column] = df_preview[column].apply(
+                    lambda x: f"{x:,.2f}"
+                    if isinstance(x, float) else f"{x:,}")
             else:
                 df_preview[column] = df_preview[column].astype(str)
 
@@ -200,11 +231,16 @@ def upload_file():
             'unique_analysis': unique_analysis,
             'info': info_str,
             'describe': {
-                col: {k: f"{v:,.2f}" if isinstance(v, float) else str(v) 
-                     for k, v in stats.items()}
+                col: {
+                    k: f"{v:,.2f}" if isinstance(v, float) else str(v)
+                    for k, v in stats.items()
+                }
                 for col, stats in df.describe(include='all').to_dict().items()
             },
-            'null_counts': {col: f"{count:,}" for col, count in df.isnull().sum().to_dict().items()},
+            'null_counts': {
+                col: f"{count:,}"
+                for col, count in df.isnull().sum().to_dict().items()
+            },
             'preview': df_preview.to_dict(orient='records')
         }
 
@@ -231,7 +267,7 @@ def upload_file():
 
         cleaned_analysis = clean_nan(analysis)
         converted_analysis = convert_np_values(cleaned_analysis)
-        
+
         return jsonify({
             'filename': file.filename,
             'size': int(os.path.getsize(file_path)),  # Convert to standard int
