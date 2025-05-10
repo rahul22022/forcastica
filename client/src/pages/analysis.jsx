@@ -79,7 +79,9 @@ const Analysis = () => {
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
       <header className="bg-black text-white px-6 py-4 flex justify-between items-center border-b border-gray-700">
-        <h1 className="text-xl font-bold">Forcastica</h1>
+        <Link to="/" className="flex items-center gap-2">
+          <img src="/forcastica_logo.png" alt="Forcastica Logo" className="h-8" />
+        </Link>
         <nav className="space-x-4">
           <Link to="/" className="hover:text-orange-400">Home</Link>
           <Link to="/upload" className="hover:text-orange-400">Upload</Link>

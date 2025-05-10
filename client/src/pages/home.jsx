@@ -6,14 +6,14 @@ import './layout.css';
 const Home = () => {
   return (
     <>
-    
+
 
       {/* Header/Navbar */}
       <header className="font-energetic min-h-[60px] flex flex-wrap sm:justify-start sm:flex-nowrap z-50 w-full bg-black text-sm py-3 sm:py-0 border-b-[1px] border-solid border-gray-600" id="header">
         <nav aria-label="Global" className="relative max-w-screen-2xl w-full mx-auto px-4 sm:flex sm:items-center sm:justify-between sm:px-6 lg:px-8">
           <div className="flex items-center justify-between flex-grow-1">
-            <Link to="/" className="flex text-xl gap-2 items-center justify-center font-semibold text-white">
-            
+            <Link to="/" className="flex items-center gap-2">
+              <img src="/forcastica_logo.png" alt="Forcastica Logo" className="h-8" />
             </Link>
           </div>
           <div className="hs-collapse hidden overflow-hidden transition-all duration-300 sm:block" id="navbar-collapse-with-animation">
