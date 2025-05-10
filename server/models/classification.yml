@@ -1,0 +1,29 @@
+models:
+- name: Logistic Regression
+  description: A linear model for binary classification.
+  parameters:
+    - C: 1.0
+    - penalty: l2
+
+- name: Random Forest
+  description: An ensemble of decision trees for classification.
+  parameters:
+    - n_estimators: 100
+    - max_depth: None
+
+- name: Support Vector Machine
+  description: A model that finds the best hyperplane to separate classes.
+  parameters:
+    - C: 1.0
+    - kernel: rbf
+
+- name: K-Nearest Neighbors
+  description: A model that classifies based on the k nearest neighbors.
+  parameters:
+    - n_neighbors: 5
+    - weights: uniform
+
+- name: Naive Bayes
+  description: A probabilistic model based on Bayes' theorem.
+  parameters:
+    - var_smoothing: 1e-9

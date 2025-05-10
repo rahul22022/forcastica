@@ -1,0 +1,75 @@
+time_series_models:
+- name: ARIMA
+  description: AutoRegressive Integrated Moving Average model for time series forecasting.
+  parameters:
+    - p: 1  # Order of the autoregressive part
+    - d: 1  # Degree of differencing
+    - q: 1  # Order of the moving average part
+
+- name: SARIMA
+  description: Seasonal ARIMA model for time series with seasonality.
+  parameters:
+    - p: 1
+    - d: 1
+    - q: 1
+    - P: 1  # Seasonal autoregressive order
+    - D: 1  # Seasonal differencing order
+    - Q: 1  # Seasonal moving average order
+    - m: 12 # Number of time steps in a season
+
+- name: SARIMAX
+  description: SARIMA model with exogenous variables for time series forecasting.
+  parameters:
+    - p: 1
+    - d: 1
+    - q: 1
+    - P: 1
+    - D: 1
+    - Q: 1
+    - m: 12
+    - exog: null  # Exogenous variables
+
+- name: Prophet
+  description: A time series forecasting model developed by Facebook for trend and seasonality.
+  parameters:
+    - seasonality_mode: additive
+    - yearly_seasonality: auto
+    - weekly_seasonality: auto
+    - daily_seasonality: auto
+
+- name: LSTM
+  description: Long Short-Term Memory neural network for time series forecasting.
+  parameters:
+    - units: 50  # Number of LSTM units
+    - activation: tanh
+    - optimizer: adam
+    - loss: mean_squared_error
+
+- name: GRU
+  description: Gated Recurrent Unit neural network for time series forecasting.
+  parameters:
+    - units: 50
+    - activation: tanh
+    - optimizer: adam
+    - loss: mean_squared_error
+
+- name: XGBoost Regressor
+  description: Gradient boosting model adapted for time series forecasting.
+  parameters:
+    - n_estimators: 100
+    - learning_rate: 0.1
+    - max_depth: 3
+
+- name: Random Forest Regressor
+  description: Random forest model adapted for time series forecasting.
+  parameters:
+    - n_estimators: 100
+    - max_depth: None
+    - min_samples_split: 2
+
+- name: Holt-Winters Exponential Smoothing
+  description: A method for forecasting time series data with trend and seasonality.
+  parameters:
+    - trend: additive
+    - seasonal: additive
+    - seasonal_periods: 12
