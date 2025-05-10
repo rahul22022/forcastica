@@ -33,10 +33,50 @@ def apply_cors_headers(response):
     return response
 
 
+import yaml
+
 # === Routes ===
 @app.route('/')
 def home():
     return "🚀 Forcastica Flask API ready."
+
+@app.route('/select-model', methods=['POST'])
+def select_model():
+    global stored_df
+    if stored_df is None:
+        return jsonify({'error': 'No data available'}), 400
+
+    data = request.json
+    prediction_type = data.get('predictionType')
+    target_variable = data.get('targetVariable')
+
+    if target_variable not in stored_df.columns:
+        return jsonify({'error': f'Target variable {target_variable} not found in dataset'}), 400
+
+    try:
+        # Load appropriate model configuration
+        model_file = 'models/classification.yml' if prediction_type == 'classification' else 'models/time_series.yml'
+        with open(model_file, 'r') as f:
+            models = yaml.safe_load(f)
+
+        # Select best model based on data characteristics
+        if prediction_type == 'classification':
+            if stored_df[target_variable].nunique() == 2:
+                selected_model = next(m for m in models['models'] if m['name'] == 'Logistic Regression')
+            else:
+                selected_model = next(m for m in models['models'] if m['name'] == 'Random Forest')
+        else:
+            if stored_df.index.dtype.name == 'datetime64[ns]':
+                selected_model = next(m for m in models['time_series_models'] if m['name'] == 'SARIMA')
+            else:
+                selected_model = next(m for m in models['time_series_models'] if m['name'] == 'Prophet')
+
+        return jsonify({
+            'message': f'Selected model: {selected_model["name"]}\nDescription: {selected_model["description"]}\nParameters: {selected_model["parameters"]}'
+        })
+
+    except Exception as e:
+        return jsonify({'error': f'Error selecting model: {str(e)}'}), 500
 
 @app.route('/current-data')
 def get_current_data():
