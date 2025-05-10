@@ -46,16 +46,19 @@ def upload_file():
     if request.method == 'OPTIONS':
         return '', 204
 
-    if 'file' not in request.files:
-        return jsonify({'error': 'No file selected'}), 400
-
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({'error': 'No file selected'}), 400
-
     try:
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file selected'}), 400
+
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({'error': 'No file selected'}), 400
+
         if not file.filename.endswith('.csv'):
             return jsonify({'error': 'Only CSV files are allowed'}), 400
+
+        # Ensure upload directory exists
+        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
             
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
         

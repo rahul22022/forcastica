@@ -17,10 +17,21 @@ const [nullCounts, setNullCounts] = useState(null);
   const navigate = useNavigate();
 
   const handleFileChange = async (event) => {
-    const uploadedFile = event.target.files[0];
-    setFile(uploadedFile);
+    try {
+      const uploadedFile = event.target.files[0];
+      if (!uploadedFile) {
+        setResponseMessage('Please select a file');
+        return;
+      }
+      
+      if (!uploadedFile.name.endsWith('.csv')) {
+        setResponseMessage('Please select a CSV file');
+        return;
+      }
 
-    if (uploadedFile) {
+      setFile(uploadedFile);
+      setResponseMessage('Uploading file...');
+      
       const formData = new FormData();
       formData.append('file', uploadedFile);
 
