@@ -104,16 +104,16 @@ const Analysis = () => {
             <div className="space-y-6">
               <div className="bg-white p-6 rounded-lg shadow">
                 <h3 className="text-lg font-semibold mb-4">Select Columns</h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                   {Object.keys(data).map(column => (
-                    <label key={column} className="flex items-center space-x-2">
+                    <label key={column} className="flex items-center p-3 border rounded-lg hover:bg-gray-50 transition-colors">
                       <input
                         type="checkbox"
                         checked={selectedColumns.includes(column)}
                         onChange={() => handleColumnSelect(column)}
-                        className="form-checkbox"
+                        className="form-checkbox h-5 w-5 text-blue-600"
                       />
-                      <span>{column}</span>
+                      <span className="ml-3 text-sm font-medium text-gray-700">{column}</span>
                     </label>
                   ))}
                 </div>
@@ -121,38 +121,38 @@ const Analysis = () => {
 
               <div className="bg-white p-6 rounded-lg shadow">
                 <h3 className="text-lg font-semibold mb-4">Actions</h3>
-                <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   <button
                     onClick={handleRemoveColumns}
                     disabled={selectedColumns.length === 0}
-                    className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 disabled:opacity-50"
+                    className="flex items-center justify-center bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors"
                   >
                     Remove Selected Columns
                   </button>
                   
-                  <div className="space-x-4">
-                    <button
-                      onClick={() => handleNullValues('remove')}
-                      disabled={selectedColumns.length === 0}
-                      className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700 disabled:opacity-50"
-                    >
-                      Remove Null Rows
-                    </button>
-                    <button
-                      onClick={() => handleNullValues('mean')}
-                      disabled={selectedColumns.length === 0}
-                      className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50"
-                    >
-                      Fill with Mean
-                    </button>
-                    <button
-                      onClick={() => handleNullValues('mode')}
-                      disabled={selectedColumns.length === 0}
-                      className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
-                    >
-                      Fill with Mode
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => handleNullValues('remove')}
+                    disabled={selectedColumns.length === 0}
+                    className="flex items-center justify-center bg-yellow-600 text-white px-6 py-3 rounded-lg hover:bg-yellow-700 disabled:opacity-50 transition-colors"
+                  >
+                    Remove Null Rows
+                  </button>
+                  
+                  <button
+                    onClick={() => handleNullValues('mean')}
+                    disabled={selectedColumns.length === 0}
+                    className="flex items-center justify-center bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
+                  >
+                    Fill with Mean
+                  </button>
+                  
+                  <button
+                    onClick={() => handleNullValues('mode')}
+                    disabled={selectedColumns.length === 0}
+                    className="flex items-center justify-center bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                  >
+                    Fill with Mode
+                  </button>
                 </div>
               </div>
 
