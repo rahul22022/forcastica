@@ -57,8 +57,12 @@ const [nullCounts, setNullCounts] = useState(null);
         }
       } catch (error) {
         console.error('Upload error:', error);
-        setResponseMessage('An error occurred while uploading the file.');
+        const errorMessage = error.response?.data?.error || 'An error occurred while uploading the file.';
+        setResponseMessage(errorMessage);
         setFileRecords([]);
+        setFileDetails(null);
+        setInfo('');
+        setNullCounts(null);
       }
     }
   };

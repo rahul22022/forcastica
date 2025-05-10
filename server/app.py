@@ -47,20 +47,31 @@ def upload_file():
         return '', 204
 
     if 'file' not in request.files:
-        return jsonify({'error': 'No file part in request'}), 400
+        return jsonify({'error': 'No file selected'}), 400
 
     file = request.files['file']
     if file.filename == '':
-        return jsonify({'error': 'No selected file'}), 400
+        return jsonify({'error': 'No file selected'}), 400
 
     try:
         if not file.filename.endswith('.csv'):
             return jsonify({'error': 'Only CSV files are allowed'}), 400
             
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-        file.save(file_path)
+        
+        # Ensure upload directory exists
+        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+        
+        try:
+            file.save(file_path)
+        except Exception as e:
+            return jsonify({'error': f'Failed to save file: {str(e)}'}), 500
 
-        df = pd.read_csv(file_path)
+        try:
+            df = pd.read_csv(file_path)
+        except Exception as e:
+            return jsonify({'error': f'Failed to read CSV file: {str(e)}'}), 400
+
         if df.empty:
             return jsonify({'error': 'The CSV file is empty'}), 400
             
