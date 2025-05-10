@@ -12,7 +12,7 @@ const Home = () => {
       <header className="font-energetic min-h-[60px] flex flex-wrap sm:justify-start sm:flex-nowrap z-50 w-full bg-black text-sm py-3 sm:py-0 border-b-[1px] border-solid border-gray-600" id="header">
         <nav aria-label="Global" className="relative max-w-screen-2xl w-full mx-auto px-4 sm:flex sm:items-center sm:justify-between sm:px-6 lg:px-8">
           <div className="flex items-center justify-between flex-grow-1">
-            <Link to="/" className="flex items-center gap-2">
+            <Link to="/home" className="flex items-center gap-2">
               <img src="/forcastica_logo.png" alt="Forcastica Logo" className="h-6 w-auto" />
             </Link>
           </div>
