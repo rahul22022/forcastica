@@ -81,6 +81,22 @@ def upload_file():
         if df.empty:
             return jsonify({'error': 'The CSV file is empty'}), 400
 
+        # Analyze unique values in columns
+        unique_analysis = {}
+        for column in df.columns:
+            unique_count = df[column].nunique()
+            total_count = len(df)
+            unique_ratio = unique_count / total_count
+            is_unique_identifier = unique_ratio > 0.9  # 90% unique values threshold
+            
+            unique_analysis[column] = {
+                'unique_count': unique_count,
+                'total_count': total_count,
+                'unique_ratio': unique_ratio,
+                'is_unique_identifier': is_unique_identifier,
+                'null_count': df[column].isnull().sum()
+            }
+
         stored_df = df
 
         # Generate data analysis
@@ -103,6 +119,7 @@ def upload_file():
             'num_records': f"{len(df):,}",
             'columns': df.columns.tolist(),
             'column_types': column_types,
+            'unique_analysis': unique_analysis,
             'info': info_str,
             'describe': {
                 col: {k: f"{v:,.2f}" if isinstance(v, float) else str(v) 

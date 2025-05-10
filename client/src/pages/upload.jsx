@@ -152,6 +152,42 @@ const Upload = () => {
               </div>
             </div>
 
+            <div className="mb-8">
+              <h3 className="text-xl font-semibold mb-4">Column Analysis</h3>
+              <div className="bg-white p-6 rounded-lg shadow-md">
+                <h4 className="text-lg font-medium mb-3">Column Recommendations</h4>
+                <div className="space-y-4">
+                  {fileDetails?.analysis?.unique_analysis && 
+                    Object.entries(fileDetails.analysis.unique_analysis).map(([column, analysis]) => (
+                      <div key={column} className="p-4 border rounded-lg">
+                        <div className="flex justify-between items-center">
+                          <span className="font-semibold">{column}</span>
+                          {analysis.is_unique_identifier && (
+                            <span className="text-red-500 text-sm">Suggested for removal (Unique Identifier)</span>
+                          )}
+                        </div>
+                        <div className="mt-2 text-sm text-gray-600">
+                          <div>Unique Values: {analysis.unique_count} / {analysis.total_count} ({(analysis.unique_ratio * 100).toFixed(1)}%)</div>
+                          <div>Null Values: {analysis.null_count}</div>
+                          {analysis.null_count > 0 && (
+                            <div className="mt-2 text-orange-600">
+                              Suggested actions for null values:
+                              <ul className="list-disc ml-4 mt-1">
+                                <li>Remove rows with null values</li>
+                                <li>Fill with mean/median (for numeric)</li>
+                                <li>Fill with mode (for categorical)</li>
+                                <li>Fill with a custom value</li>
+                              </ul>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))
+                  }
+                </div>
+              </div>
+            </div>
+
             <h3 className="text-xl font-semibold mb-4">Data Preview (First 10 Records)</h3>
             <div className="overflow-auto max-h-[500px] border border-gray-300 rounded-lg shadow-lg">
               <table className="min-w-full table-auto text-sm">
