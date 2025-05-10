@@ -1,19 +1,16 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './layout.css';
-
 import { useNavigate } from 'react-router-dom';
-
-
-
 
 const Upload = () => {
   const [file, setFile] = useState(null);
   const [responseMessage, setResponseMessage] = useState('');
   const [fileDetails, setFileDetails] = useState(null);
   const [fileRecords, setFileRecords] = useState([]);
-const [info, setInfo] = useState('');
-const [nullCounts, setNullCounts] = useState(null);
+  const [info, setInfo] = useState('');
+  const [nullCounts, setNullCounts] = useState(null);
   const navigate = useNavigate();
 
   const handleFileChange = async (event) => {
@@ -36,44 +33,42 @@ const [nullCounts, setNullCounts] = useState(null);
       formData.append('file', uploadedFile);
 
       const response = await fetch('/upload', {
-          method: 'POST',
-          body: formData,
-          headers: {
-            'Accept': 'application/json',
-          },
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setResponseMessage(data.message || 'Upload successful');
+
+        setFileDetails({
+          filename: uploadedFile.name,
+          size: (uploadedFile.size / 1024).toFixed(2),
         });
 
-        if (response.ok) {
-          const data = await response.json();
-          setResponseMessage(data.message || 'Upload successful');
-
-          setFileDetails({
-            filename: uploadedFile.name,
-            size: (uploadedFile.size / 1024).toFixed(2),
-          });
-
-          if (data.analysis) {
-            setFileRecords(data.analysis.preview || []);
-            setInfo(data.analysis.info || '');
-            setNullCounts(data.analysis.null_counts || {});
-          } else {
-            setFileRecords([]);
-          }
-
+        if (data.analysis) {
+          setFileRecords(data.analysis.preview || []);
+          setInfo(data.analysis.info || '');
+          setNullCounts(data.analysis.null_counts || {});
         } else {
-          const errorData = await response.json();
-          setResponseMessage(errorData.error || 'Failed to upload file.');
           setFileRecords([]);
         }
-      } catch (error) {
-        console.error('Upload error:', error);
-        const errorMessage = error.response?.data?.error || 'An error occurred while uploading the file.';
-        setResponseMessage(errorMessage);
+      } else {
+        const errorData = await response.json();
+        setResponseMessage(errorData.error || 'Failed to upload file.');
         setFileRecords([]);
-        setFileDetails(null);
-        setInfo('');
-        setNullCounts(null);
       }
+    } catch (error) {
+      console.error('Upload error:', error);
+      const errorMessage = error.response?.data?.error || 'An error occurred while uploading the file.';
+      setResponseMessage(errorMessage);
+      setFileRecords([]);
+      setFileDetails(null);
+      setInfo('');
+      setNullCounts(null);
     }
   };
 
@@ -179,32 +174,31 @@ const [nullCounts, setNullCounts] = useState(null);
         )}
       </section>
       <button
-  onClick={async () => {
-    try {
-      setResponseMessage('Generating statistics...');
-      const response = await fetch('/analyze');
-      if (response.ok) {
-        const data = await response.json();
-        if (data.images && data.images.length > 0) {
-          navigate('/analyze');
-        } else {
-          setResponseMessage('No statistics were generated. Please upload a file first.');
-        }
-      } else {
-        setResponseMessage('Failed to generate statistics');
-      }
-    } catch (error) {
-      setResponseMessage('Error generating statistics');
-    }
-  }}
-  className="mt-6 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded flex items-center justify-center space-x-2"
->
-  <span>Generate Statistics</span>
-  {responseMessage === 'Generating statistics...' && (
-    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-  )}
-</button>
-
+        onClick={async () => {
+          try {
+            setResponseMessage('Generating statistics...');
+            const response = await fetch('/analyze');
+            if (response.ok) {
+              const data = await response.json();
+              if (data.images && data.images.length > 0) {
+                navigate('/analyze');
+              } else {
+                setResponseMessage('No statistics were generated. Please upload a file first.');
+              }
+            } else {
+              setResponseMessage('Failed to generate statistics');
+            }
+          } catch (error) {
+            setResponseMessage('Error generating statistics');
+          }
+        }}
+        className="mt-6 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded flex items-center justify-center space-x-2"
+      >
+        <span>Generate Statistics</span>
+        {responseMessage === 'Generating statistics...' && (
+          <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+        )}
+      </button>
 
       {/* Footer */}
       <footer className="text-center text-xs text-gray-500 py-4 border-t border-gray-200">
