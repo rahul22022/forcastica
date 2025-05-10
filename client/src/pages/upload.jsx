@@ -259,22 +259,18 @@ const Upload = () => {
       {/* Footer */}
       <footer className="bg-black text-gray-400 py-8 border-t border-gray-600 mt-auto">
         <div className="max-w-screen-2xl mx-auto px-4 md:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center md:text-left">
-              <h3 className="text-white font-bold mb-4">Forcastica</h3>
-              <p className="mb-2 text-sm">RudraTech LLC</p>
-              <p className="mb-2 text-sm">Registered in Virginia</p>
-              <p className="text-sm hover:text-orange-500">www.forcastica.com</p>
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-white">Forcastica</span>
+              <span className="text-sm">| RudraTech LLC, Virginia | www.forcastica.com</span>
             </div>
-            <div className="text-center md:text-left">
-              <h3 className="text-white font-bold mb-4">Contact</h3>
-              <p className="mb-2 text-sm hover:text-orange-500">info@forcastica.com</p>
-              <p className="mb-2 text-sm">Virginia, USA</p>
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-white">Contact</span>
+              <span className="text-sm">| info@forcastica.com | Virginia, USA</span>
             </div>
-            <div className="text-center md:text-left">
-              <h3 className="text-white font-bold mb-4">Legal</h3>
-              <p className="mb-2 text-sm">© {new Date().getFullYear()} RudraTech LLC</p>
-              <p className="text-sm">All rights reserved</p>
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-white">Legal</span>
+              <span className="text-sm">| © {new Date().getFullYear()} RudraTech LLC | All rights reserved</span>
             </div>
           </div>
         </div>
