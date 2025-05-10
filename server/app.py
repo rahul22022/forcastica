@@ -116,12 +116,10 @@ def generate_statistics():
         return jsonify({'error': 'No data uploaded yet'}), 400
 
     try:
-        existing_images = [f for f in os.listdir(IMAGES_FOLDER) if f.endswith('.png')]
-        if existing_images:
-            return jsonify({
-                'message': 'Using existing histograms',
-                'images': existing_images
-            }), 200
+        # Clean up existing images
+        for file in os.listdir(IMAGES_FOLDER):
+            if file.endswith('.png'):
+                os.remove(os.path.join(IMAGES_FOLDER, file))
 
         generated_images = []
 

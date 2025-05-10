@@ -171,23 +171,29 @@ const [nullCounts, setNullCounts] = useState(null);
       </section>
       <button
   onClick={async () => {
-    const response = await fetch('/analyze');
-    if (response.ok) {
-      const data = await response.json();
-      if (data.images && data.images.length > 0) {
-        navigate('/analyze');
+    try {
+      setResponseMessage('Generating statistics...');
+      const response = await fetch('/analyze');
+      if (response.ok) {
+        const data = await response.json();
+        if (data.images && data.images.length > 0) {
+          navigate('/analyze');
+        } else {
+          setResponseMessage('No statistics were generated. Please upload a file first.');
+        }
       } else {
-        alert('No statistics were generated. Please upload a file first.');
+        setResponseMessage('Failed to generate statistics');
       }
-
-      // Navigate to analysis page
-    } else {
-      alert('Failed to generate statistics');
+    } catch (error) {
+      setResponseMessage('Error generating statistics');
     }
   }}
-  className="mt-6 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+  className="mt-6 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded flex items-center justify-center space-x-2"
 >
-  Generate Statistics
+  <span>Generate Statistics</span>
+  {responseMessage === 'Generating statistics...' && (
+    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+  )}
 </button>
 
 
