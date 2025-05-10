@@ -164,6 +164,7 @@ const [nullCounts, setNullCounts] = useState(null);
           <p className="text-sm text-gray-500 mt-4">No records to display.</p>
         )}
       </section>
+      </>
       <button
   onClick={async () => {
     const response = await fetch('/analyze');
