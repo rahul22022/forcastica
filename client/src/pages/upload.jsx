@@ -106,7 +106,7 @@ const [nullCounts, setNullCounts] = useState(null);
           </div>
         )}
 
-        {fileRecords && fileRecords.length > 0 && (
+        {fileRecords && fileRecords.length > 0 ? (
           <>
             <div className="mb-8">
               <h3 className="text-xl font-semibold mb-4">Data Analysis</h3>
@@ -161,8 +161,7 @@ const [nullCounts, setNullCounts] = useState(null);
               </table>
             </div>
           </>
-        ) 
-          : (
+        ) : (
           <p className="text-sm text-gray-500 mt-4">No records to display.</p>
         )}
       </section>
