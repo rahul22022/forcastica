@@ -87,6 +87,7 @@ const Analysis = () => {
           <Link to="/upload" className="hover:text-orange-400">Upload</Link>
           <Link to="/analyze" className="hover:text-orange-400">Analyze</Link>
           <Link to="/analysis" className="hover:text-orange-400">Data Analysis</Link>
+          <Link to="/model-selection" className="hover:text-orange-400">Model Selection</Link>
         </nav>
       </header>
 
@@ -121,38 +122,40 @@ const Analysis = () => {
 
               <div className="bg-white p-6 rounded-lg shadow">
                 <h3 className="text-lg font-semibold mb-4">Actions</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <button
-                    onClick={handleRemoveColumns}
-                    disabled={selectedColumns.length === 0}
-                    className="flex items-center justify-center bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors"
-                  >
-                    Remove Selected Columns
-                  </button>
+                <div className="space-y-4">
+                  <div className="flex gap-4">
+                    <button
+                      onClick={handleRemoveColumns}
+                      disabled={selectedColumns.length === 0}
+                      className="flex-1 bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors"
+                    >
+                      Remove Selected Columns
+                    </button>
+                    
+                    <button
+                      onClick={() => handleNullValues('remove')}
+                      className="flex-1 bg-yellow-600 text-white px-6 py-3 rounded-lg hover:bg-yellow-700 transition-colors"
+                    >
+                      Remove Null Rows
+                    </button>
+                  </div>
                   
-                  <button
-                    onClick={() => handleNullValues('remove')}
-                    disabled={selectedColumns.length === 0}
-                    className="flex items-center justify-center bg-yellow-600 text-white px-6 py-3 rounded-lg hover:bg-yellow-700 disabled:opacity-50 transition-colors"
-                  >
-                    Remove Null Rows
-                  </button>
-                  
-                  <button
-                    onClick={() => handleNullValues('mean')}
-                    disabled={selectedColumns.length === 0}
-                    className="flex items-center justify-center bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
-                  >
-                    Fill with Mean
-                  </button>
-                  
-                  <button
-                    onClick={() => handleNullValues('mode')}
-                    disabled={selectedColumns.length === 0}
-                    className="flex items-center justify-center bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
-                  >
-                    Fill with Mode
-                  </button>
+                  <div className="flex gap-4">
+                    <button
+                      onClick={() => handleNullValues('mean')}
+                      className="flex-1 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors"
+                    >
+                      Fill with Mean
+                    </button>
+                    
+                    <button
+                      onClick={() => handleNullValues('mode')}
+                      disabled={selectedColumns.length === 0}
+                      className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                    >
+                      Fill with Mode
+                    </button>
+                  </div>
                 </div>
               </div>
 
