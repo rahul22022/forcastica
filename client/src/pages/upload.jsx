@@ -31,7 +31,7 @@ const Upload = () => {
       const formData = new FormData();
       formData.append('file', uploadedFile);
 
-      const response = await fetch('https://0.0.0.0:5000/upload', {
+      const response = await fetch('/upload', {
         method: 'POST',
         body: formData,
         credentials: 'include',
