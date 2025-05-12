@@ -291,6 +291,22 @@ def train_models():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/save-cleansed', methods=['POST'])
+def save_cleansed():
+    global stored_df
+    if stored_df is None:
+        return jsonify({'error': 'No data available'}), 400
+        
+    data = request.json
+    filename = data.get('filename', 'cleansed_data.csv')
+    save_path = os.path.join('cleansed_data', filename)
+    
+    try:
+        stored_df.to_csv(os.path.join('server', save_path), index=False)
+        return jsonify({'message': 'Data saved successfully', 'path': save_path})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/handle-nulls', methods=['POST'])
 def handle_nulls():
     global stored_df

@@ -166,6 +166,38 @@ const Analysis = () => {
                 </div>
               </div>
 
+              {/* Save Button */}
+              <div className="bg-white p-6 rounded-lg shadow mb-6">
+                <button
+                  onClick={async () => {
+                    try {
+                      const originalFile = sessionStorage.getItem('currentFile');
+                      const filename = originalFile ? `cleansed_${originalFile}` : 'cleansed_data.csv';
+                      
+                      const response = await fetch('/save-cleansed', {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ filename }),
+                      });
+                      
+                      if (response.ok) {
+                        const result = await response.json();
+                        setMessage('Data saved successfully to cleansed_data directory');
+                      } else {
+                        setMessage('Error saving data');
+                      }
+                    } catch (error) {
+                      setMessage('Error: ' + error.message);
+                    }
+                  }}
+                  className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors"
+                >
+                  Save Cleansed Data
+                </button>
+              </div>
+
               {/* Data Preview */}
               <div className="bg-white p-6 rounded-lg shadow">
                 <h3 className="text-lg font-semibold mb-4">Data Preview</h3>
