@@ -241,12 +241,6 @@ def train_models():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-stored_df = stored_df.drop(columns=columns)
-    return jsonify({
-        'data': stored_df.to_dict(),
-        'message': 'Columns removed successfully'
-    }), 200
-
 @app.route('/handle-nulls', methods=['POST'])
 def handle_nulls():
     global stored_df
