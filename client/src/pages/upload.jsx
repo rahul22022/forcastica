@@ -70,11 +70,11 @@ const Upload = () => {
           <div className="bg-gray-900 rounded-lg p-6">
             <h1 className="text-2xl font-bold text-white mb-6">Upload Dataset</h1>
 
-            <div className="space-y-6">
+            <div className="space-y-4">
               {/* File Upload Section */}
-              <div className="bg-gray-800 rounded-lg p-6">
-                <h2 className="text-lg font-semibold text-white mb-4">New File Upload</h2>
-                <div className="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center">
+              <div className="bg-gray-800 rounded-lg p-4">
+                <h2 className="text-lg font-semibold text-white mb-2">New File Upload</h2>
+                <div className="border-2 border-dashed border-gray-600 rounded-lg p-4 text-center">
                   <input
                     type="file"
                     accept=".csv"
@@ -83,11 +83,11 @@ const Upload = () => {
                     id="fileInput"
                   />
                   <label htmlFor="fileInput" className="cursor-pointer block">
-                    <svg className="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="mx-auto h-8 w-8 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                     </svg>
-                    <span className="text-gray-300">Drop CSV file here or click to select</span>
-                    <span className="block text-sm text-gray-500 mt-2">Maximum file size: 10MB</span>
+                    <span className="text-gray-300 text-sm">Drop CSV file here or click to select</span>
+                    <span className="block text-xs text-gray-500 mt-1">Maximum file size: 10MB</span>
                   </label>
                 </div>
               </div>
