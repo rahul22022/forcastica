@@ -31,6 +31,8 @@ const ModelSelection = () => {
   const handleTrainModel = async () => {
     try {
       setLoading(true);
+      setMessage('Training models... This may take a few minutes.');
+      
       const response = await fetch('/train-models', {
         method: 'POST',
         headers: {
@@ -38,7 +40,8 @@ const ModelSelection = () => {
         },
         body: JSON.stringify({
           target_column: targetVariable,
-          problem_type: predictionType
+          problem_type: predictionType,
+          processed_file: sessionStorage.getItem('processedFile')
         }),
       });
       
@@ -46,7 +49,11 @@ const ModelSelection = () => {
       if (response.ok) {
         setTrainingResults(data.results);
         setMessage('Models trained successfully!');
-        navigate('/predictions');
+        
+        // Only navigate if there's no confusion matrix to display
+        if (!data.results.confusion_matrix) {
+          navigate('/predictions');
+        }
       } else {
         setMessage(data.error || 'Failed to train models');
       }
@@ -144,23 +151,45 @@ const ModelSelection = () => {
                   </div>
                 )}
 
-                {trainingResults && (
+                {loading ? (
+                  <div className="mt-6 flex flex-col items-center">
+                    <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                    <p className="mt-4 text-lg text-gray-700">Training Models...</p>
+                  </div>
+                ) : trainingResults && (
                   <div className="mt-6">
                     <h4 className="text-lg font-semibold mb-3">Training Results</h4>
-                    <div className="space-y-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {Object.entries(trainingResults).map(([model, metrics]) => (
-                        <div key={model} className="p-3 bg-gray-50 rounded">
-                          <h5 className="font-medium">{model}</h5>
-                          <div className="text-sm text-gray-600">
+                        <div key={model} className="p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                          <h5 className="text-lg font-medium text-primary mb-2">{model}</h5>
+                          <div className="space-y-1">
                             {Object.entries(metrics).map(([metric, value]) => (
-                              <div key={metric}>
-                                {metric}: {typeof value === 'number' ? value.toFixed(4) : value}
-                              </div>
+                              metric !== 'confusion_matrix' && (
+                                <div key={metric} className="flex justify-between items-center">
+                                  <span className="text-gray-600">{metric}:</span>
+                                  <span className="font-medium">
+                                    {typeof value === 'number' ? value.toFixed(4) : value}
+                                  </span>
+                                </div>
+                              )
                             ))}
                           </div>
                         </div>
                       ))}
                     </div>
+                    {trainingResults.confusion_matrix && (
+                      <div className="mt-8">
+                        <h4 className="text-lg font-semibold mb-3">Confusion Matrix</h4>
+                        <div className="bg-white p-4 rounded-lg shadow-md">
+                          <img 
+                            src={trainingResults.confusion_matrix} 
+                            alt="Confusion Matrix" 
+                            className="max-w-full h-auto mx-auto"
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
