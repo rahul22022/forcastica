@@ -492,4 +492,5 @@ def list_images():
 
 # === Launch ===
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True, threaded=True, use_reloader=False)
+    print("Starting Flask server on http://0.0.0.0:5000")
+    app.run(host='0.0.0.0', port=5000, debug=True)
