@@ -94,15 +94,17 @@ const Upload = () => {
 
               {/* Existing Files Section */}
               <div className="bg-gray-800 rounded-lg p-6">
-                <h2 className="text-lg font-semibold text-white mb-4">Select Existing File</h2>
+                <h2 className="text-xl font-semibold text-orange-400 mb-4">Select Existing File</h2>
                 <select 
                   className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg p-3 focus:ring-2 focus:ring-orange-500"
                   onChange={async (e) => {
                     if (e.target.value) {
-                      const formData = new FormData();
-                      formData.append('file', e.target.value);
-                      
                       try {
+                        const formData = new FormData();
+                        const blob = new Blob([''], { type: 'text/csv' });
+                        const file = new File([blob], e.target.value);
+                        formData.append('file', file);
+                        
                         const response = await fetch('/upload', {
                           method: 'POST',
                           body: formData
@@ -156,8 +158,8 @@ const Upload = () => {
                   <h3 className="text-lg font-medium text-white mb-2">Null Values</h3>
                   {Object.entries(nullCounts).map(([col, count]) => (
                     <div key={col} className="flex justify-between text-sm py-1">
-                      <span className="text-gray-300">{col}:</span>
-                      <span className={count > 0 ? 'text-red-400' : 'text-green-400'}>{count}</span>
+                      <span className="text-orange-300 font-medium">{col}:</span>
+                      <span className={count > 0 ? 'text-red-400 font-bold' : 'text-green-400 font-bold'}>{count}</span>
                     </div>
                   ))}
                 </div>
