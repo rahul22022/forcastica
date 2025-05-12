@@ -3,8 +3,13 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 const Predictions = () => {
-  const [modelList, setModelList] = useState([]);
+  const [modelsByType, setModelsByType] = useState({
+    classification: [],
+    regression: [],
+    time_series: []
+  });
   const [selectedModel, setSelectedModel] = useState('');
+  const [selectedType, setSelectedType] = useState('');
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
@@ -16,7 +21,13 @@ const Predictions = () => {
         const response = await fetch('/list-models');
         if (response.ok) {
           const data = await response.json();
-          setModelList(data.models);
+          // Organize models by type
+          const organized = {
+            classification: data.models.filter(m => m.includes('classification')),
+            regression: data.models.filter(m => m.includes('regression')),
+            time_series: data.models.filter(m => m.includes('time_series'))
+          };
+          setModelsByType(organized);
         }
       } catch (error) {
         setMessage('Error fetching models: ' + error.message);
@@ -70,22 +81,45 @@ const Predictions = () => {
           <h2 className="text-2xl font-bold mb-6">Run Predictions</h2>
           
           <div className="bg-white rounded-lg shadow p-6 mb-6">
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Select Model
-              </label>
-              <select
-                value={selectedModel}
-                onChange={(e) => setSelectedModel(e.target.value)}
-                className="w-full p-2 border rounded-md"
-              >
-                <option value="">Choose a model</option>
-                {modelList.map((model) => (
-                  <option key={model} value={model}>
-                    {model}
-                  </option>
-                ))}
-              </select>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Select Problem Type
+                </label>
+                <select
+                  value={selectedType}
+                  onChange={(e) => {
+                    setSelectedType(e.target.value);
+                    setSelectedModel('');
+                  }}
+                  className="w-full p-2 border rounded-md"
+                >
+                  <option value="">Choose a problem type</option>
+                  <option value="classification">Classification</option>
+                  <option value="regression">Regression</option>
+                  <option value="time_series">Time Series</option>
+                </select>
+              </div>
+
+              {selectedType && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Select Model
+                  </label>
+                  <select
+                    value={selectedModel}
+                    onChange={(e) => setSelectedModel(e.target.value)}
+                    className="w-full p-2 border rounded-md"
+                  >
+                    <option value="">Choose a model</option>
+                    {modelsByType[selectedType].map((model) => (
+                      <option key={model} value={model}>
+                        {model.replace(`_${selectedType}`, '').replace('.joblib', '')}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
 
             <button
