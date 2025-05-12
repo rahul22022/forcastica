@@ -151,49 +151,56 @@ const Predictions = () => {
             </div>
           )}
 
-          {results && (
-            <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-xl font-semibold mb-4">Prediction Results</h3>
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      {Object.keys(results.predictions[0] || {}).map((header) => (
-                        <th
-                          key={header}
-                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                        >
-                          {header}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {results.predictions.map((row, idx) => (
-                      <tr key={idx}>
-                        {Object.values(row).map((value, cellIdx) => (
-                          <td
-                            key={cellIdx}
-                            className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+          {loading ? (
+            <div className="flex flex-col items-center justify-center p-10">
+              <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+              <p className="text-lg text-gray-700">{message}</p>
+            </div>
+          ) : (
+            results && (
+              <div className="bg-white rounded-lg shadow p-6">
+                <h3 className="text-xl font-semibold mb-4">Prediction Results</h3>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        {Object.keys(results.predictions[0] || {}).map((header) => (
+                          <th
+                            key={header}
+                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                           >
-                            {typeof value === 'number' ? value.toFixed(4) : value}
-                          </td>
+                            {header}
+                          </th>
                         ))}
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {results.predictions.map((row, idx) => (
+                        <tr key={idx}>
+                          {Object.values(row).map((value, cellIdx) => (
+                            <td
+                              key={cellIdx}
+                              className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                            >
+                              {typeof value === 'number' ? value.toFixed(4) : value}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <div className="mt-4">
+                  <a
+                    href={results.csv_url}
+                    download
+                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700"
+                  >
+                    Download Predictions CSV
+                  </a>
+                </div>
               </div>
-              <div className="mt-4">
-                <a
-                  href={results.csv_url}
-                  download
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700"
-                >
-                  Download Predictions CSV
-                </a>
-              </div>
-            </div>
+            )
           )}
         </div>
       </main>

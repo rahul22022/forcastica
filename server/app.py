@@ -176,6 +176,7 @@ def run_predictions():
     try:
         data = request.json
         model_name = data.get('model_name')
+        problem_type = data.get('problem_type', 'classification')
 
         if not model_name:
             return jsonify({'error': 'No model selected'}), 400
@@ -183,30 +184,47 @@ def run_predictions():
         if stored_df is None:
             return jsonify({'error': 'No data available'}), 400
 
-        # Load the model
-        model_path = os.path.join('server/saved_models', model_name)
-        import joblib
-        model = joblib.load(model_path)
+        # Create model filename
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        model_filename = f"{model_name}_{problem_type}_{timestamp}.joblib"
+        model_save_path = os.path.join('server/saved_models', model_filename)
 
-        # Get feature columns (all except target)
-        problem_type = 'classification' if 'classification' in model_name else 'regression'
+        # Initialize and train the model
+        trainer = ModelTrainer()
+        if problem_type == 'classification':
+            model = trainer.classification_models.get(model_name)
+        else:
+            model = trainer.regression_models.get(model_name)
+
+        if model is None:
+            return jsonify({'error': 'Invalid model selected'}), 400
+
         X = stored_df.copy()
-
-        # Make predictions
         predictions = model.predict(X)
+
+        # Save the trained model
+        import joblib
+        joblib.dump(model, model_save_path)
 
         # Add predictions to dataframe
         df_with_predictions = stored_df.copy()
         df_with_predictions['predicted_value'] = predictions
 
         # Save results to CSV
-        output_path = os.path.join('server/uploads', 'predictions.csv')
+        results_filename = f"predictions_{timestamp}.csv"
+        output_path = os.path.join('server/uploads', results_filename)
         df_with_predictions.to_csv(output_path, index=False)
 
-        # Return both predictions and file URL
+        # Return predictions, file URLs and model info
         return jsonify({
             'predictions': df_with_predictions.to_dict('records'),
-            'csv_url': '/download/predictions.csv'
+            'csv_url': f'/download/{results_filename}',
+            'model_info': {
+                'name': model_name,
+                'type': problem_type,
+                'file': model_filename,
+                'timestamp': timestamp
+            }
         })
 
     except Exception as e:
