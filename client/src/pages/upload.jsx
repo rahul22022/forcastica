@@ -55,6 +55,25 @@ const Upload = () => {
           setFileDetails({
           filename: uploadedFile.name,
           size: (uploadedFile.size / 1024).toFixed(2),
+
+  const [availableFiles, setAvailableFiles] = useState([]);
+
+  const fetchAvailableFiles = async () => {
+    try {
+      const response = await fetch('/list-files');
+      if (response.ok) {
+        const data = await response.json();
+        setAvailableFiles(data.files);
+      }
+    } catch (error) {
+      console.error('Error fetching files:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAvailableFiles();
+  }, [responseMessage]); // Refresh when new file is uploaded
+
         });
 
         } catch (parseError) {
@@ -103,7 +122,24 @@ const Upload = () => {
 
       {/* Upload Section */}
       <section className="p-10">
-        <h1 className="text-2xl font-bold mb-4">Upload a CSV File</h1>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold">Upload a CSV File</h1>
+          
+          <div className="bg-white p-4 rounded-lg shadow-md">
+            <h3 className="text-lg font-semibold mb-2">Available Files</h3>
+            {availableFiles.length > 0 ? (
+              <ul className="space-y-1">
+                {availableFiles.map((file, index) => (
+                  <li key={index} className="text-blue-600 hover:text-blue-800">
+                    {file}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-gray-500">No files available</p>
+            )}
+          </div>
+        </div>
         <input
           type="file"
           accept=".csv"
