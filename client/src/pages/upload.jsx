@@ -10,6 +10,23 @@ const Upload = () => {
   const [fileRecords, setFileRecords] = useState([]);
   const [info, setInfo] = useState('');
   const [nullCounts, setNullCounts] = useState(null);
+  const [availableFiles, setAvailableFiles] = useState([]);
+
+  const fetchAvailableFiles = async () => {
+    try {
+      const response = await fetch('/list-files');
+      if (response.ok) {
+        const data = await response.json();
+        setAvailableFiles(data.files);
+      }
+    } catch (error) {
+      console.error('Error fetching files:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAvailableFiles();
+  }, [responseMessage]); // Refresh when new file is uploaded
   const navigate = useNavigate();
 
   const handleFileChange = async (event) => {
@@ -53,28 +70,9 @@ const Upload = () => {
           }
           setResponseMessage(data.message || 'Upload successful');
           setFileDetails({
-          filename: uploadedFile.name,
-          size: (uploadedFile.size / 1024).toFixed(2),
-
-  const [availableFiles, setAvailableFiles] = useState([]);
-
-  const fetchAvailableFiles = async () => {
-    try {
-      const response = await fetch('/list-files');
-      if (response.ok) {
-        const data = await response.json();
-        setAvailableFiles(data.files);
-      }
-    } catch (error) {
-      console.error('Error fetching files:', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchAvailableFiles();
-  }, [responseMessage]); // Refresh when new file is uploaded
-
-        });
+            filename: uploadedFile.name,
+            size: (uploadedFile.size / 1024).toFixed(2),
+          });
 
         } catch (parseError) {
           console.error('JSON Parse error:', parseError, 'Response:', text);
