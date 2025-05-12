@@ -150,11 +150,21 @@ def remove_columns():
 
     data = request.json
     columns = data.get('columns', [])
+    original_file = data.get('filename', '')
 
     stored_df = stored_df.drop(columns=columns)
+    
+    # Save processed file with _v2 suffix
+    if original_file:
+        base_name = original_file.rsplit('.', 1)[0]
+        new_filename = f"{base_name}_v2.csv"
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], new_filename)
+        stored_df.to_csv(file_path, index=False)
+        
     return jsonify({
         'data': stored_df.to_dict(),
-        'message': 'Columns removed successfully'
+        'message': 'Columns removed successfully',
+        'processed_file': new_filename
     }), 200
 
 @app.route('/list-models', methods=['GET'])
@@ -265,6 +275,13 @@ def train_models():
         data = request.json
         target_column = data.get('target_column')
         problem_type = data.get('problem_type', 'classification')
+        processed_file = data.get('processed_file')
+        
+        # Use processed file if available
+        if processed_file and os.path.exists(os.path.join(app.config['UPLOAD_FOLDER'], processed_file)):
+            df = pd.read_csv(os.path.join(app.config['UPLOAD_FOLDER'], processed_file))
+            if df is not None:
+                stored_df = df
 
         if target_column not in stored_df.columns:
             return jsonify({'error': f'Target column {target_column} not found'}), 400
