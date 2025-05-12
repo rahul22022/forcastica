@@ -12,6 +12,39 @@ const Upload = () => {
   const [nullCounts, setNullCounts] = useState({});
   const navigate = useNavigate();
 
+  const handleFileChange = async (event) => {
+    const selectedFile = event.target.files[0];
+    if (!selectedFile) return;
+
+    setFile(selectedFile);
+    setResponseMessage('Uploading file...');
+
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+
+    try {
+      const response = await fetch('/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setFileDetails(data);
+        setFileRecords(data.analysis.preview || []);
+        setInfo(data.analysis.info || '');
+        setNullCounts(data.analysis.null_counts || {});
+        setResponseMessage('File uploaded successfully!');
+      } else {
+        setResponseMessage(data.error || 'Upload failed');
+      }
+    } catch (error) {
+      setResponseMessage('Error uploading file');
+      console.error('Upload error:', error);
+    }
+  };
+
   return (
 <React.Fragment>
   <div className="upload-page">
