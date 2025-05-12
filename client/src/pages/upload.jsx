@@ -1,4 +1,18 @@
 
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+const Upload = () => {
+  const [file, setFile] = useState(null);
+  const [fileDetails, setFileDetails] = useState(null);
+  const [fileRecords, setFileRecords] = useState([]);
+  const [responseMessage, setResponseMessage] = useState('');
+  const [availableFiles, setAvailableFiles] = useState([]);
+  const [info, setInfo] = useState('');
+  const [nullCounts, setNullCounts] = useState({});
+  const navigate = useNavigate();
+
+  return (
 <React.Fragment>
   <div className="upload-page">
     {/* Header */}
@@ -235,3 +249,7 @@
     </button>
   </div>
 </React.Fragment>
+  );
+};
+
+export default Upload;
