@@ -75,7 +75,8 @@ const Upload = () => {
           });
 
         } catch (parseError) {
-          console.error('JSON Parse error:', parseError, 'Response:', text);
+          const errorText = await response.text();
+          console.error('JSON Parse error:', parseError, 'Response:', errorText);
           throw new Error('Failed to parse server response');
         }
         
