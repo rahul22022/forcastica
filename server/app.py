@@ -13,10 +13,12 @@ import seaborn as sns
 # === Flask Setup ===
 app = Flask(__name__)
 CORS(app, 
-     resources={r"/*": {"origins": "*"}},
-     methods=['GET', 'POST', 'OPTIONS'],
-     allow_headers=['Content-Type', 'Authorization'],
+     resources={r"/*": {"origins": ["http://localhost:3000", "https://*.repl.co"]}},
+     methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+     allow_headers=['Content-Type', 'Authorization', 'X-Requested-With'],
+     expose_headers=['Content-Type', 'Authorization'],
      supports_credentials=True)
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 
 UPLOAD_FOLDER = 'uploads'
 IMAGES_FOLDER = 'images'
