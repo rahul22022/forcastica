@@ -265,6 +265,15 @@ def handle_nulls():
     }), 200
 
 
+from file_manager import FileManager
+
+file_manager = FileManager()
+
+@app.route('/list-files', methods=['GET'])
+def list_files():
+    files = file_manager.list_uploaded_files()
+    return jsonify({'files': files})
+
 @app.route('/upload', methods=['POST', 'OPTIONS'])
 def upload_file():
     global stored_df
@@ -300,6 +309,17 @@ def upload_file():
 
         try:
             file.save(file_path)
+            was_fixed, final_path = file_manager.validate_and_fix_file(file_path)
+            if was_fixed:
+                df = pd.read_csv(final_path)
+                return jsonify({
+                    'message': 'File uploaded and fixed successfully',
+                    'fixed': True,
+                    'original_file': file.filename,
+                    'fixed_file': os.path.basename(final_path)
+                })
+            else:
+                df = pd.read_csv(file_path)
         except Exception as e:
             return jsonify({'error': f'Failed to save file: {str(e)}'}), 500
 
