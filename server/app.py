@@ -152,7 +152,9 @@ def remove_columns():
 
     stored_df = stored_df.drop(columns=columns)
     return jsonify({
-
+        'data': stored_df.to_dict(),
+        'message': 'Columns removed successfully'
+    }), 200
 
 @app.route('/list-models', methods=['GET'])
 def list_models():
