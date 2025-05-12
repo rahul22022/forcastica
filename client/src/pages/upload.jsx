@@ -123,18 +123,35 @@ const Upload = () => {
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Upload a CSV File</h1>
           
-          <div className="bg-white p-4 rounded-lg shadow-md">
-            <h3 className="text-lg font-semibold mb-2">Available Files</h3>
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-semibold">Available Files</h3>
+              <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">
+                {availableFiles.length} {availableFiles.length === 1 ? 'file' : 'files'}
+              </span>
+            </div>
             {availableFiles.length > 0 ? (
-              <ul className="space-y-1">
+              <div className="grid gap-3">
                 {availableFiles.map((file, index) => (
-                  <li key={index} className="text-blue-600 hover:text-blue-800">
-                    {file}
-                  </li>
+                  <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                    <div className="flex items-center">
+                      <svg className="w-5 h-5 text-gray-500 mr-3" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
+                        <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                      <span className="font-medium text-gray-700">{file}</span>
+                    </div>
+                    <span className="text-sm text-gray-500">.csv</span>
+                  </div>
                 ))}
-              </ul>
+              </div>
             ) : (
-              <p className="text-gray-500">No files available</p>
+              <div className="text-center py-6">
+                <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z" />
+                </svg>
+                <p className="mt-2 text-gray-500">No files available</p>
+                <p className="text-sm text-gray-400">Upload a CSV file to get started</p>
+              </div>
             )}
           </div>
         </div>
