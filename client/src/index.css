@@ -1,55 +1,47 @@
-/* index.css */
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed,
-figure, figcaption, footer, header, hgroup,
-menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  font-size: 100%;
-  font: inherit;
-  vertical-align: baseline;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: #4F46E5;
+  --primary-dark: #4338CA;
+  --secondary: #10B981;
+  --accent: #F59E0B;
+  --background: #111827;
+  --foreground: #F9FAFB;
 }
 
-/* Set box-sizing globally */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-/* Set default body styles */
 body {
-  line-height: 1;
-  font-family: sans-serif;
+  font-family: 'Inter', sans-serif;
+  background-color: var(--background);
+  color: var(--foreground);
 }
 
-/* Remove list styles */
-ol, ul {
-  list-style: none;
+.glass-morphism {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
 }
 
-/* Remove quotes from blockquotes and q */
-blockquote, q {
-  quotes: none;
-}
-blockquote::before, blockquote::after,
-q::before, q::after {
-  content: '';
-  content: none;
+.gradient-border {
+  background: linear-gradient(var(--background), var(--background)) padding-box,
+              linear-gradient(to right, var(--primary), var(--secondary)) border-box;
+  border: 2px solid transparent;
+  border-radius: 1rem;
 }
 
-/* Reset table styles */
-table {
-  border-collapse: collapse;
-  border-spacing: 0;
+.animate-gradient {
+  background: linear-gradient(-45deg, var(--primary), var(--secondary), var(--accent));
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+}
+
+@keyframes gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
