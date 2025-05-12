@@ -11,12 +11,11 @@ from matplotlib import pyplot as plt
 import seaborn as sns
 
 # === Flask Setup ===
-app = Flask(__name__)
+app = Flask(__name__, static_folder='uploads')
 CORS(app, 
-     resources={r"/*": {"origins": ["http://localhost:3000", "https://*.repl.co"]}},
+     resources={r"/*": {"origins": "*"}},
      methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-     allow_headers=['Content-Type', 'Authorization', 'X-Requested-With'],
-     expose_headers=['Content-Type', 'Authorization'],
+     allow_headers=['Content-Type'],
      supports_credentials=True)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 

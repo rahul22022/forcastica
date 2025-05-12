@@ -31,11 +31,11 @@ mode = "parallel"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd client && REACT_APP_API_URL=/api npm start"
+args = "cd server && FLASK_ENV=development python app.py & "
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd server && FLASK_ENV=development python app.py"
+args = "cd client && REACT_APP_API_URL=http://0.0.0.0:5000 npm start"
 
 [[ports]]
 localPort = 3000
