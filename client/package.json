@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "proxy": "http://0.0.0.0:5000",
   "private": true,
+  "proxy": "http://0.0.0.0:5000",
   "dependencies": {
     "@coreui/chartjs": "^4.0.0",
     "@coreui/icons": "^3.0.1",

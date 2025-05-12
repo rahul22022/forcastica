@@ -12,7 +12,11 @@ import seaborn as sns
 
 # === Flask Setup ===
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
+CORS(app, 
+     resources={r"/*": {"origins": "*"}},
+     methods=['GET', 'POST', 'OPTIONS'],
+     allow_headers=['Content-Type', 'Authorization'],
+     supports_credentials=True)
 
 UPLOAD_FOLDER = 'uploads'
 IMAGES_FOLDER = 'images'
