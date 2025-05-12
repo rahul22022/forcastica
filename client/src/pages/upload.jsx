@@ -157,20 +157,21 @@ const Upload = () => {
             <div className="mb-8">
               <h4 className="text-lg font-medium mb-3">Available Files</h4>
               {availableFiles.length > 0 ? (
-                <select 
-                  className="w-full p-3 border border-gray-300 rounded-lg bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                  onChange={(e) => {
-                    const file = new File([''], e.target.value, { type: 'text/csv' });
-                    handleFileChange({ target: { files: [file] } });
-                  }}
-                >
-                  <option value="">Select a file</option>
-                  {availableFiles.map((file, index) => (
-                    <option key={index} value={file}>{file}</option>
-                  ))}
-                </select>
-              </div>
-            ) : (
+                <div>
+                  <select 
+                    className="w-full p-3 border border-gray-300 rounded-lg bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    onChange={(e) => {
+                      const file = new File([''], e.target.value, { type: 'text/csv' });
+                      handleFileChange({ target: { files: [file] } });
+                    }}
+                  >
+                    <option value="">Select a file</option>
+                    {availableFiles.map((file, index) => (
+                      <option key={index} value={file}>{file}</option>
+                    ))}
+                  </select>
+                </div>
+              ) : (
               <div className="text-center py-6">
                 <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z" />
