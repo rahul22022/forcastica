@@ -16,33 +16,7 @@ warnings.filterwarnings('ignore')
 
 class ModelTrainer:
     def __init__(self):
-        try:
-            import tensorflow as tf
-            
-            # Define TensorFlow models
-            def create_tf_classifier():
-                model = tf.keras.Sequential([
-                    tf.keras.layers.Dense(64, activation='relu'),
-                    tf.keras.layers.Dropout(0.2),
-                    tf.keras.layers.Dense(32, activation='relu'),
-                    tf.keras.layers.Dense(2, activation='softmax')
-                ])
-                model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-                return model
-                
-            def create_tf_regressor():
-                model = tf.keras.Sequential([
-                    tf.keras.layers.Dense(64, activation='relu'),
-                    tf.keras.layers.Dropout(0.2),
-                    tf.keras.layers.Dense(32, activation='relu'),
-                    tf.keras.layers.Dense(1)
-                ])
-                model.compile(optimizer='adam', loss='mse', metrics=['mae'])
-                return model
-            
-            self.has_tensorflow = True
-        except ImportError:
-            self.has_tensorflow = False
+        self.has_tensorflow = False
             
         self.classification_models = {
             'random_forest': RandomForestClassifier(n_estimators=100, random_state=42),
