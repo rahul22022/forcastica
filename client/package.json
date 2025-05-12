@@ -1,7 +1,7 @@
 {
   "name": "forcastica",
   "version": "0.1.0",
-  "proxy": "http://0.0.0.0:5000",
+  "proxy": "http://localhost:5000",
   "private": true,
   "dependencies": {
     "@coreui/chartjs": "^4.0.0",
