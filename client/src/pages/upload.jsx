@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
@@ -12,7 +11,6 @@ const Upload = () => {
   const [nullCounts, setNullCounts] = useState({});
   const navigate = useNavigate();
 
-  // Fetch available files on component mount
   React.useEffect(() => {
     fetch('/list-files')
       .then(response => response.json())
@@ -54,277 +52,157 @@ const Upload = () => {
   };
 
   return (
-<React.Fragment>
-  <div className="upload-page">
-    {/* Header */}
-    <header className="font-energetic min-h-[60px] flex flex-wrap justify-between items-center px-6 bg-black text-white text-sm py-3 border-b border-gray-600">
-      <Link to="/" className="flex items-center gap-2">
-        <img src="/forcastica_logo.png" alt="Forcastica Logo" className="h-6 w-auto" />
-      </Link>
-      <nav className="space-x-4">
-        <Link to="/" className="text-white hover:text-orange-500">Home</Link>
-        <Link to="/upload" className="hover:text-orange-400">Upload</Link>
-        <Link to="/analyze" className="hover:text-orange-400">Analyze</Link>
-        <Link to="/analysis" className="hover:text-orange-400">Data Analysis</Link>
-      </nav>
-    </header>
+    <div className="min-h-screen bg-gray-900">
+      <header className="font-energetic min-h-[60px] flex justify-between items-center px-6 bg-black text-white text-sm py-3 border-b border-gray-600">
+        <Link to="/" className="flex items-center gap-2">
+          <img src="/forcastica_logo.png" alt="Forcastica Logo" className="h-6 w-auto" />
+        </Link>
+        <nav className="space-x-4">
+          <Link to="/" className="hover:text-orange-400">Home</Link>
+          <Link to="/upload" className="hover:text-orange-400">Upload</Link>
+          <Link to="/analyze" className="hover:text-orange-400">Analyze</Link>
+          <Link to="/analysis" className="hover:text-orange-400">Data Analysis</Link>
+        </nav>
+      </header>
 
-    {/* Upload Section */}
-    <section className="p-10">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-2xl font-bold text-white mb-8">Upload a CSV File</h1>
+      <main className="max-w-4xl mx-auto px-4 py-8">
+        <div className="bg-gradient-to-r from-orange-500 via-orange-400 to-orange-300 p-1 rounded-lg mb-8">
+          <div className="bg-gray-900 rounded-lg p-6">
+            <h1 className="text-2xl font-bold text-white mb-6">Upload Dataset</h1>
 
-        <div className="bg-white p-6 rounded-lg shadow-md mb-8">
-          <h3 className="text-xl font-semibold mb-6">Choose File</h3>
-          
-          <div className="space-y-6">
-            {/* New File Upload */}
-            <div>
-              <h4 className="text-lg font-medium mb-3">Upload New File</h4>
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
-                <input
-                  type="file"
-                  accept=".csv"
-                  onChange={handleFileChange}
-                  className="block w-full text-sm text-gray-500
-                    file:mr-4 file:py-2 file:px-4
-                    file:rounded-full file:border-0
-                    file:text-sm file:font-semibold
-                    file:bg-orange-50 file:text-orange-700
-                    hover:file:bg-orange-100"
-                />
-              </div>
-            </div>
-
-            {/* Select Existing File */}
-            <div>
-              <h4 className="text-lg font-medium mb-3">Select Existing File</h4>
-              <select 
-                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
-                onChange={(e) => {
-                  if (e.target.value) {
-                    const formData = new FormData();
-                    formData.append('file', e.target.value);
-                    handleFileChange({ target: { files: [new File([formData], e.target.value)] } });
-                  }
-                }}
-              >
-                <option value="">Select a file</option>
-                {availableFiles.map((filename, index) => (
-                  <option key={index} value={filename}>{filename}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className="mb-8">
-            <h4 className="text-lg font-medium mb-3">Upload New File</h4>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-              <input
-                type="file"
-                accept=".csv"
-                onChange={handleFileChange}
-                className="hidden"
-                id="fileInput"
-              />
-              <label htmlFor="fileInput" className="cursor-pointer">
-                <div className="flex flex-col items-center">
-                  <svg className="w-12 h-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                  </svg>
-                  <span className="text-gray-600">Drop CSV file here or click to select</span>
-                  <span className="text-sm text-gray-500 mt-1">Maximum file size: 10MB</span>
+            <div className="space-y-6">
+              {/* File Upload Section */}
+              <div className="bg-gray-800 rounded-lg p-6">
+                <h2 className="text-lg font-semibold text-white mb-4">New File Upload</h2>
+                <div className="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center">
+                  <input
+                    type="file"
+                    accept=".csv"
+                    onChange={handleFileChange}
+                    className="hidden"
+                    id="fileInput"
+                  />
+                  <label htmlFor="fileInput" className="cursor-pointer block">
+                    <svg className="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                    <span className="text-gray-300">Drop CSV file here or click to select</span>
+                    <span className="block text-sm text-gray-500 mt-2">Maximum file size: 10MB</span>
+                  </label>
                 </div>
-              </label>
-            </div>
-          </div>
+              </div>
 
-          <div className="mb-8">
-            <h4 className="text-lg font-medium mb-3">Available Files</h4>
-            {availableFiles.length > 0 ? (
-              <div>
+              {/* Existing Files Section */}
+              <div className="bg-gray-800 rounded-lg p-6">
+                <h2 className="text-lg font-semibold text-white mb-4">Select Existing File</h2>
                 <select 
-                  className="w-full p-3 border border-gray-300 rounded-lg bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg p-3 focus:ring-2 focus:ring-orange-500"
                   onChange={(e) => {
-                    const file = new File([''], e.target.value, { type: 'text/csv' });
-                    handleFileChange({ target: { files: [file] } });
+                    if (e.target.value) {
+                      const formData = new FormData();
+                      formData.append('file', e.target.value);
+                      handleFileChange({ target: { files: [new File([formData], e.target.value)] } });
+                    }
                   }}
                 >
-                  <option value="">Select a file</option>
-                  {availableFiles.map((file, index) => (
-                    <option key={index} value={file}>{file}</option>
+                  <option value="">Choose a file</option>
+                  {availableFiles.map((filename, index) => (
+                    <option key={index} value={filename}>{filename}</option>
                   ))}
                 </select>
               </div>
-            ) : (
-              <div className="text-center py-6">
-                <p>No files available</p>
+            </div>
+
+            {/* Status Message */}
+            {responseMessage && (
+              <div className={`mt-6 p-4 rounded-lg ${responseMessage.includes('success') ? 'bg-green-900 text-green-200' : 'bg-red-900 text-red-200'}`}>
+                {responseMessage}
               </div>
             )}
           </div>
         </div>
-      </div>
-    </section>
 
-    <input
-      type="file"
-      accept=".csv"
-      onChange={handleFileChange}
-      className="mb-4 border border-gray-300 p-2"
-    />
-
-    {file && (
-      <p className="mb-2 text-gray-700">Selected File: <strong>{file.name}</strong></p>
-    )}
-
-    {responseMessage && (
-      <p className={`mb-4 ${responseMessage.includes('success') ? 'text-green-600' : 'text-red-600'}`}>
-        {responseMessage}
-      </p>
-    )}
-
-    {fileDetails && (
-      <div className="mb-4">
-        <p className="font-semibold">File Details:</p>
-        <ul className="list-disc pl-5">
-          <li>Filename: {fileDetails.filename}</li>
-          <li>Size: {fileDetails.size} KB</li>
-        </ul>
-      </div>
-    )}
-
-    {fileRecords && fileRecords.length > 0 ? (
-      <>
-        <div className="mb-8">
-          <h3 className="text-xl font-semibold mb-4">Data Analysis</h3>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h4 className="text-lg font-medium mb-3">Dataset Info</h4>
-              <pre className="text-sm bg-gray-50 p-4 rounded overflow-auto">
-                {info}
-              </pre>
-            </div>
-
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h4 className="text-lg font-medium mb-3">Null Value Counts</h4>
-              <div className="space-y-2">
-                {Object.entries(nullCounts || {}).map(([col, count]) => (
-                  <div key={col} className="flex justify-between">
-                    <span>{col}:</span>
-                    <span className={count > 0 ? 'text-red-500' : 'text-green-500'}>
-                      {count}
-                    </span>
-                  </div>
-                ))}
+        {/* File Analysis Section */}
+        {fileDetails && (
+          <div className="space-y-6">
+            <div className="bg-gray-800 rounded-lg p-6">
+              <h2 className="text-xl font-semibold text-white mb-4">File Analysis</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-gray-700 p-4 rounded-lg">
+                  <h3 className="text-lg font-medium text-white mb-2">Dataset Info</h3>
+                  <pre className="text-sm text-gray-300 overflow-auto max-h-60">{info}</pre>
+                </div>
+                <div className="bg-gray-700 p-4 rounded-lg">
+                  <h3 className="text-lg font-medium text-white mb-2">Null Values</h3>
+                  {Object.entries(nullCounts).map(([col, count]) => (
+                    <div key={col} className="flex justify-between text-sm py-1">
+                      <span className="text-gray-300">{col}:</span>
+                      <span className={count > 0 ? 'text-red-400' : 'text-green-400'}>{count}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
+
+            {/* Data Preview */}
+            {fileRecords.length > 0 && (
+              <div className="bg-gray-800 rounded-lg p-6 overflow-hidden">
+                <h2 className="text-xl font-semibold text-white mb-4">Data Preview</h2>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-700">
+                    <thead className="bg-gray-900">
+                      <tr>
+                        {Object.keys(fileRecords[0]).map((key) => (
+                          <th key={key} className="px-4 py-3 text-left text-sm font-semibold text-gray-300">
+                            {key}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-700">
+                      {fileRecords.slice(0, 5).map((row, rowIndex) => (
+                        <tr key={rowIndex} className="hover:bg-gray-700">
+                          {Object.values(row).map((value, colIndex) => (
+                            <td key={colIndex} className="px-4 py-2 text-sm text-gray-300 whitespace-nowrap">
+                              {value === null ? 'N/A' : String(value)}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* Generate Statistics Button */}
+            <button
+              onClick={async () => {
+                try {
+                  setResponseMessage('Generating statistics...');
+                  const response = await fetch('/analyze');
+                  if (response.ok) {
+                    const data = await response.json();
+                    if (data.images && data.images.length > 0) {
+                      navigate('/analyze');
+                    } else {
+                      setResponseMessage('No statistics were generated. Please upload a file first.');
+                    }
+                  } else {
+                    setResponseMessage('Failed to generate statistics');
+                  }
+                } catch (error) {
+                  setResponseMessage('Error generating statistics');
+                }
+              }}
+              className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200"
+            >
+              Generate Statistics
+            </button>
           </div>
-        </div>
-
-        <div className="mb-8">
-          <h3 className="text-xl font-semibold mb-4">Column Analysis</h3>
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h4 className="text-lg font-medium mb-3">Column Recommendations</h4>
-            <div className="space-y-4">
-              {fileDetails?.analysis?.unique_analysis && 
-                Object.entries(fileDetails.analysis.unique_analysis).map(([column, analysis]) => (
-                  <div key={column} className="p-4 border rounded-lg">
-                    <div className="flex justify-between items-center">
-                      <span className="font-semibold">{column}</span>
-                      {analysis.is_unique_identifier && (
-                        <span className="text-red-500 text-sm">Suggested for removal (Unique Identifier)</span>
-                      )}
-                    </div>
-                    <div className="mt-2 text-sm text-gray-600">
-                      <div>Unique Values: {analysis.unique_count} / {analysis.total_count} ({(analysis.unique_ratio * 100).toFixed(1)}%)</div>
-                      <div>Null Values: {analysis.null_count}</div>
-                      {analysis.null_count > 0 && (
-                        <div className="mt-2 text-orange-600">
-                          Suggested actions for null values:
-                          <ul className="list-disc ml-4 mt-1">
-                            <li>Remove rows with null values</li>
-                            <li>Fill with mean/median (for numeric)</li>
-                            <li>Fill with mode (for categorical)</li>
-                            <li>Fill with a custom value</li>
-                          </ul>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))
-              }
-            </div>
-          </div>
-        </div>
-
-        <h3 className="text-xl font-semibold mb-4">Data Preview (First 10 Records)</h3>
-        <div className="overflow-auto max-h-[500px] border border-gray-300 rounded-lg shadow-lg">
-          <table className="min-w-full table-auto text-sm">
-            <thead className="bg-gray-800 text-white sticky top-0 z-10">
-              <tr>
-                {Object.keys(fileRecords[0]).map((key) => (
-                  <th key={key} className="border border-gray-600 px-4 py-3 text-left font-semibold">
-                    {key}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="bg-white">
-              {fileRecords.map((row, rowIndex) => (
-                <tr key={rowIndex} className="hover:bg-gray-50 transition-colors duration-150">
-                  {Object.entries(row).map(([key, value], colIndex) => (
-                    <td key={colIndex} className="border px-4 py-2 font-mono text-right">
-                      {value === null || value === undefined ? 
-                        <span className="text-gray-400">N/A</span> : 
-                        value.toString().match(/^-?\d+\.?\d*$/) ?
-                          <span className="text-blue-600">{value}</span> :
-                          <span className="text-gray-700 text-left">{
-                            String(value).length > 60 ? 
-                            String(value).slice(0, 60) + '...' : 
-                            value
-                          }</span>
-                      }
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </>
-    ) : (
-      <p className="text-sm text-gray-500 mt-4">No records to display.</p>
-    )}
-
-    <button
-      onClick={async () => {
-        try {
-          setResponseMessage('Generating statistics...');
-          const response = await fetch('/analyze');
-          if (response.ok) {
-            const data = await response.json();
-            if (data.images && data.images.length > 0) {
-              navigate('/analyze');
-            } else {
-              setResponseMessage('No statistics were generated. Please upload a file first.');
-            }
-          } else {
-            setResponseMessage('Failed to generate statistics');
-          }
-        } catch (error) {
-          setResponseMessage('Error generating statistics');
-        }
-      }}
-      className="mt-6 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded flex items-center justify-center space-x-2"
-    >
-      <span>Generate Statistics</span>
-      {responseMessage === 'Generating statistics...' && (
-        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-      )}
-    </button>
-  </div>
-</React.Fragment>
+        )}
+      </main>
+    </div>
   );
 };
 
