@@ -97,11 +97,31 @@ const Upload = () => {
                 <h2 className="text-lg font-semibold text-white mb-4">Select Existing File</h2>
                 <select 
                   className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg p-3 focus:ring-2 focus:ring-orange-500"
-                  onChange={(e) => {
+                  onChange={async (e) => {
                     if (e.target.value) {
                       const formData = new FormData();
                       formData.append('file', e.target.value);
-                      handleFileChange({ target: { files: [new File([formData], e.target.value)] } });
+                      
+                      try {
+                        const response = await fetch('/upload', {
+                          method: 'POST',
+                          body: formData
+                        });
+                        
+                        const data = await response.json();
+                        if (response.ok) {
+                          setFileDetails(data);
+                          setFileRecords(data.analysis.preview || []);
+                          setInfo(data.analysis.info || '');
+                          setNullCounts(data.analysis.null_counts || {});
+                          setResponseMessage('File loaded successfully!');
+                        } else {
+                          setResponseMessage(data.error || 'Failed to load file');
+                        }
+                      } catch (error) {
+                        setResponseMessage('Error loading file');
+                        console.error('Load error:', error);
+                      }
                     }
                   }}
                 >
