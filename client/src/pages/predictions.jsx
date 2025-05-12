@@ -190,7 +190,7 @@ const Predictions = () => {
                     </tbody>
                   </table>
                 </div>
-                <div className="mt-4">
+                <div className="mt-4 space-y-4">
                   <a
                     href={results.csv_url}
                     download
@@ -198,6 +198,19 @@ const Predictions = () => {
                   >
                     Download Predictions CSV
                   </a>
+                  
+                  {results.confusion_matrix && (
+                    <div className="mt-6">
+                      <h4 className="text-lg font-medium mb-3">Confusion Matrix</h4>
+                      <div className="bg-white p-4 rounded-lg shadow">
+                        <img 
+                          src={results.confusion_matrix} 
+                          alt="Confusion Matrix" 
+                          className="max-w-full h-auto mx-auto"
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )

@@ -215,10 +215,30 @@ def run_predictions():
         output_path = os.path.join('server/uploads', results_filename)
         df_with_predictions.to_csv(output_path, index=False)
 
+        # Generate confusion matrix if it's a classification problem
+        if problem_type == 'classification':
+            from sklearn.metrics import confusion_matrix
+            import seaborn as sns
+            import matplotlib.pyplot as plt
+            
+            y_true = stored_df[target_column]
+            conf_matrix = confusion_matrix(y_true, predictions)
+            
+            plt.figure(figsize=(10, 8))
+            sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues')
+            plt.title('Confusion Matrix')
+            plt.ylabel('True Label')
+            plt.xlabel('Predicted Label')
+            
+            confusion_matrix_path = os.path.join('images', f'confusion_matrix_{timestamp}.png')
+            plt.savefig(confusion_matrix_path)
+            plt.close()
+
         # Return predictions, file URLs and model info
         return jsonify({
             'predictions': df_with_predictions.to_dict('records'),
             'csv_url': f'/download/{results_filename}',
+            'confusion_matrix': f'/images/confusion_matrix_{timestamp}.png' if problem_type == 'classification' else None,
             'model_info': {
                 'name': model_name,
                 'type': problem_type,
