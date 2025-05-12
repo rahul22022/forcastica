@@ -104,12 +104,12 @@ const Upload = () => {
                         const blob = new Blob([''], { type: 'text/csv' });
                         const file = new File([blob], e.target.value);
                         formData.append('file', file);
-                        
+
                         const response = await fetch('/upload', {
                           method: 'POST',
                           body: formData
                         });
-                        
+
                         const data = await response.json();
                         if (response.ok) {
                           setFileDetails(data);
@@ -117,7 +117,7 @@ const Upload = () => {
                           setInfo(data.analysis.info || '');
                           setNullCounts(data.analysis.null_counts || {});
                           setResponseMessage('File loaded successfully!');
-                          
+
                           // Trigger analysis after file is loaded
                           const analysisResponse = await fetch('/analyze');
                           if (analysisResponse.ok) {
@@ -154,26 +154,60 @@ const Upload = () => {
         </div>
 
         {/* File Analysis Section */}
-        {fileDetails && (
-          <div className="space-y-6">
-            <div className="bg-gray-800 rounded-lg p-6">
-              <h2 className="text-xl font-semibold text-white mb-4">File Analysis</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-gray-700 p-4 rounded-lg">
-                  <h3 className="text-lg font-medium text-white mb-2">Dataset Info</h3>
-                  <pre className="text-sm text-gray-300 overflow-auto max-h-60">{info}</pre>
-                </div>
-                <div className="bg-gray-700 p-4 rounded-lg">
-                  <h3 className="text-lg font-medium text-white mb-2">Null Values</h3>
-                  {Object.entries(nullCounts).map(([col, count]) => (
-                    <div key={col} className="flex justify-between text-sm py-1">
-                      <span className="text-orange-300 font-medium">{col}:</span>
-                      <span className={count > 0 ? 'text-red-400 font-bold' : 'text-green-400 font-bold'}>{count}</span>
+              {fileDetails && (
+                <div className="space-y-6">
+                  <div className="bg-gray-800 rounded-lg p-6">
+                    <h2 className="text-xl font-semibold text-white mb-4">File Analysis</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="bg-gray-700 p-4 rounded-lg">
+                        <h3 className="text-lg font-medium text-white mb-2">Dataset Info</h3>
+                        <div className="overflow-x-auto">
+                          <table className="min-w-full divide-y divide-gray-600">
+                            <thead className="bg-gray-800">
+                              <tr>
+                                <th className="px-4 py-2 text-left text-sm font-medium text-white">Property</th>
+                                <th className="px-4 py-2 text-left text-sm font-medium text-white">Value</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-600">
+                              {info.split('\n').map((line, index) => {
+                                const [property, value] = line.split(':').map(str => str.trim());
+                                return (
+                                  <tr key={index}>
+                                    <td className="px-4 py-2 text-sm text-white">{property}</td>
+                                    <td className="px-4 py-2 text-sm text-white">{value}</td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                      <div className="bg-gray-700 p-4 rounded-lg">
+                        <h3 className="text-lg font-medium text-white mb-2">Null Values</h3>
+                        <div className="overflow-x-auto">
+                          <table className="min-w-full divide-y divide-gray-600">
+                            <thead className="bg-gray-800">
+                              <tr>
+                                <th className="px-4 py-2 text-left text-sm font-medium text-white">Column</th>
+                                <th className="px-4 py-2 text-left text-sm font-medium text-white">Null Count</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-600">
+                              {Object.entries(nullCounts).map(([col, count]) => (
+                                <tr key={col}>
+                                  <td className="px-4 py-2 text-sm text-white">{col}</td>
+                                  <td className={`px-4 py-2 text-sm font-medium ${count > 0 ? 'text-red-400' : 'text-green-400'}`}>
+                                    {count}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
                     </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+                  </div>
 
             {/* Data Preview */}
             {fileRecords.length > 0 && (
