@@ -12,10 +12,15 @@ import seaborn as sns
 
 # === Flask Setup ===
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes with default settings
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 UPLOAD_FOLDER = 'uploads'
 IMAGES_FOLDER = 'images'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(IMAGES_FOLDER, exist_ok=True)
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(IMAGES_FOLDER, exist_ok=True)
