@@ -25,32 +25,6 @@ task = "packager.installForLanguage"
 args = "python3"
 
 [[workflows.workflow]]
-name = "run_application"
-mode = "parallel"
-author = 8496234
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "npm start"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "python3 app.py"
-
-[[workflows.workflow]]
-name = "running application"
-mode = "sequential"
-author = 8496234
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "install_packages"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "run_application"
-
-[[workflows.workflow]]
 name = "dev"
 author = 8496234
 mode = "parallel"
