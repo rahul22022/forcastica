@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -79,7 +78,7 @@ const Predictions = () => {
       <main className="flex-grow p-6">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl font-bold mb-6">Run Predictions</h2>
-          
+
           <div className="bg-white rounded-lg shadow p-6 mb-6">
             <div className="space-y-4">
               <div>
@@ -96,7 +95,6 @@ const Predictions = () => {
                 >
                   <option value="">Choose a problem type</option>
                   <option value="classification">Classification</option>
-                  <option value="regression">Regression</option>
                   <option value="time_series">Time Series</option>
                 </select>
               </div>
@@ -112,11 +110,27 @@ const Predictions = () => {
                     className="w-full p-2 border rounded-md"
                   >
                     <option value="">Choose a model</option>
-                    {modelsByType[selectedType].map((model) => (
-                      <option key={model} value={model}>
-                        {model.replace(`_${selectedType}`, '').replace('.joblib', '')}
-                      </option>
-                    ))}
+                    {selectedType === 'classification' ? (
+                      <>
+                        <option value="logistic_regression">Logistic Regression</option>
+                        <option value="random_forest">Random Forest</option>
+                        <option value="svm">Support Vector Machine</option>
+                        <option value="knn">K-Nearest Neighbors</option>
+                        <option value="naive_bayes">Naive Bayes</option>
+                      </>
+                    ) : selectedType === 'time_series' ? (
+                      <>
+                        <option value="arima">ARIMA</option>
+                        <option value="sarima">SARIMA</option>
+                        <option value="sarimax">SARIMAX</option>
+                        <option value="prophet">Prophet</option>
+                        <option value="lstm">LSTM</option>
+                        <option value="gru">GRU</option>
+                        <option value="xgboost">XGBoost Regressor</option>
+                        <option value="random_forest">Random Forest Regressor</option>
+                        <option value="holt_winters">Holt-Winters</option>
+                      </>
+                    ) : null}
                   </select>
                 </div>
               )}
