@@ -5,10 +5,11 @@ import os
 import io
 import pandas as pd
 import matplotlib
-
 matplotlib.use('Agg')  # Headless backend
 from matplotlib import pyplot as plt
 import seaborn as sns
+import plotly.express as px
+import plotly.graph_objects as go
 
 # === Flask Setup ===
 app = Flask(__name__, static_folder='uploads')
