@@ -299,13 +299,19 @@ def save_cleansed():
         
     data = request.json
     filename = data.get('filename', 'cleansed_data.csv')
-    save_path = os.path.join('cleansed_data', filename)
+    
+    # Ensure cleansed_data directory exists
+    cleansed_dir = os.path.join('server', 'cleansed_data')
+    os.makedirs(cleansed_dir, exist_ok=True)
+    
+    save_path = os.path.join(cleansed_dir, filename)
     
     try:
-        stored_df.to_csv(os.path.join('server', save_path), index=False)
+        stored_df.to_csv(save_path, index=False)
         return jsonify({'message': 'Data saved successfully', 'path': save_path})
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        print(f"Error saving file: {str(e)}")  # Log the error
+        return jsonify({'error': f'Failed to save file: {str(e)}'}), 500
 
 @app.route('/handle-nulls', methods=['POST'])
 def handle_nulls():
