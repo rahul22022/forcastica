@@ -71,6 +71,25 @@ class ModelTrainer:
             'r2_score': r2
         }
 
+    def save_model(self, model, model_name, problem_type):
+        """Save trained model to disk"""
+        import joblib
+        import os
+        
+        save_path = os.path.join('server/saved_models', f'{model_name}_{problem_type}.joblib')
+        joblib.dump(model, save_path)
+        return save_path
+
+    def load_model(self, model_name, problem_type):
+        """Load trained model from disk"""
+        import joblib
+        import os
+        
+        load_path = os.path.join('server/saved_models', f'{model_name}_{problem_type}.joblib')
+        if os.path.exists(load_path):
+            return joblib.load(load_path)
+        return None
+
     def train_and_evaluate_all_models(self, X, y, problem_type='classification'):
         X_train, X_test, y_train, y_test = self.prepare_data(X, y)
         results = {}
@@ -87,7 +106,15 @@ class ModelTrainer:
         for model_name in models.keys():
             try:
                 model = train_func(X_train, y_train, model_name)
-                results[model_name] = eval_func(model, X_test, y_test)
+                evaluation = eval_func(model, X_test, y_test)
+                results[model_name] = evaluation
+                
+                # Save model if its performance is good
+                if (problem_type == 'classification' and evaluation['accuracy'] > 0.7) or \
+                   (problem_type == 'regression' and evaluation['r2_score'] > 0.7):
+                    save_path = self.save_model(model, model_name, problem_type)
+                    results[model_name]['model_path'] = save_path
+                    
             except Exception as e:
                 results[model_name] = f"Error: {str(e)}"
 

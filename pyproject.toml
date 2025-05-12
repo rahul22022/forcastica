@@ -15,4 +15,5 @@ dependencies = [
     "numpy>=2.2.5",
     "prophet>=1.1.6",
     "statsmodels>=0.14.4",
+    "joblib>=1.5.0",
 ]
