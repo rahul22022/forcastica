@@ -39,11 +39,20 @@ const Upload = () => {
         },
       });
 
+      const contentType = response.headers.get("content-type");
       if (response.ok) {
-        const text = await response.text();
         let data;
-        try {
-          data = JSON.parse(text);
+        if (contentType && contentType.indexOf("application/json") !== -1) {
+          data = await response.json();
+        } else {
+          const text = await response.text();
+          try {
+            data = JSON.parse(text);
+          } catch (parseError) {
+            console.error('Response is not JSON:', text);
+            throw new Error('Server returned invalid JSON response');
+          }
+        }
         setResponseMessage(data.message || 'Upload successful');
 
         setFileDetails({

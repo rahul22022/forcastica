@@ -12,12 +12,7 @@ import seaborn as sns
 
 # === Flask Setup ===
 app = Flask(__name__)
-CORS(app,
-     resources={
-         r"/*": {
-             "origins": ["http://localhost:3000", "https://*.replit.dev"]
-         }
-     })  # Enable CORS for all routes
+CORS(app)  # Enable CORS for all routes with default settings
 
 UPLOAD_FOLDER = 'uploads'
 IMAGES_FOLDER = 'images'
@@ -270,7 +265,11 @@ def upload_file():
     global stored_df
 
     if request.method == 'OPTIONS':
-        return '', 204
+        response = make_response()
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', '*')
+        response.headers.add('Access-Control-Allow-Methods', '*')
+        return response, 200
 
     try:
         if 'file' not in request.files:
