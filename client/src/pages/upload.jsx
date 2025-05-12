@@ -117,6 +117,15 @@ const Upload = () => {
                           setInfo(data.analysis.info || '');
                           setNullCounts(data.analysis.null_counts || {});
                           setResponseMessage('File loaded successfully!');
+                          
+                          // Trigger analysis after file is loaded
+                          const analysisResponse = await fetch('/analyze');
+                          if (analysisResponse.ok) {
+                            const analysisData = await analysisResponse.json();
+                            if (analysisData.images && analysisData.images.length > 0) {
+                              setResponseMessage('Analysis completed successfully!');
+                            }
+                          }
                         } else {
                           setResponseMessage(data.error || 'Failed to load file');
                         }
