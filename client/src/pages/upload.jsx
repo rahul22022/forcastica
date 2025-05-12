@@ -126,24 +126,49 @@ const Upload = () => {
           
           <div className="bg-white p-6 rounded-lg shadow-md">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-semibold">Available Files</h3>
+              <h3 className="text-xl font-semibold">Data Selection</h3>
               <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">
                 {availableFiles.length} {availableFiles.length === 1 ? 'file' : 'files'}
               </span>
             </div>
-            {availableFiles.length > 0 ? (
-              <div className="grid gap-3">
-                {availableFiles.map((file, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                    <div className="flex items-center">
-                      <svg className="w-5 h-5 text-gray-500 mr-3" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
-                        <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
-                      <span className="font-medium text-gray-700">{file}</span>
-                    </div>
-                    <span className="text-sm text-gray-500">.csv</span>
+            
+            <div className="mb-8">
+              <h4 className="text-lg font-medium mb-3">Upload New File</h4>
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                <input
+                  type="file"
+                  accept=".csv"
+                  onChange={handleFileChange}
+                  className="hidden"
+                  id="fileInput"
+                />
+                <label htmlFor="fileInput" className="cursor-pointer">
+                  <div className="flex flex-col items-center">
+                    <svg className="w-12 h-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                    <span className="text-gray-600">Drop CSV file here or click to select</span>
+                    <span className="text-sm text-gray-500 mt-1">Maximum file size: 10MB</span>
                   </div>
-                ))}
+                </label>
+              </div>
+            </div>
+
+            <div className="mb-8">
+              <h4 className="text-lg font-medium mb-3">Available Files</h4>
+              {availableFiles.length > 0 ? (
+                <select 
+                  className="w-full p-3 border border-gray-300 rounded-lg bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  onChange={(e) => {
+                    const file = new File([''], e.target.value, { type: 'text/csv' });
+                    handleFileChange({ target: { files: [file] } });
+                  }}
+                >
+                  <option value="">Select a file</option>
+                  {availableFiles.map((file, index) => (
+                    <option key={index} value={file}>{file}</option>
+                  ))}
+                </select>
               </div>
             ) : (
               <div className="text-center py-6">
