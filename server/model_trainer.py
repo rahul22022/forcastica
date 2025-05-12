@@ -16,36 +16,43 @@ warnings.filterwarnings('ignore')
 
 class ModelTrainer:
     def __init__(self):
-        import tensorflow as tf
-        
-        # Define TensorFlow models
-        def create_tf_classifier():
-            model = tf.keras.Sequential([
-                tf.keras.layers.Dense(64, activation='relu'),
-                tf.keras.layers.Dropout(0.2),
-                tf.keras.layers.Dense(32, activation='relu'),
-                tf.keras.layers.Dense(2, activation='softmax')
-            ])
-            model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-            return model
+        try:
+            import tensorflow as tf
             
-        def create_tf_regressor():
-            model = tf.keras.Sequential([
-                tf.keras.layers.Dense(64, activation='relu'),
-                tf.keras.layers.Dropout(0.2),
-                tf.keras.layers.Dense(32, activation='relu'),
-                tf.keras.layers.Dense(1)
-            ])
-            model.compile(optimizer='adam', loss='mse', metrics=['mae'])
-            return model
-        
+            # Define TensorFlow models
+            def create_tf_classifier():
+                model = tf.keras.Sequential([
+                    tf.keras.layers.Dense(64, activation='relu'),
+                    tf.keras.layers.Dropout(0.2),
+                    tf.keras.layers.Dense(32, activation='relu'),
+                    tf.keras.layers.Dense(2, activation='softmax')
+                ])
+                model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+                return model
+                
+            def create_tf_regressor():
+                model = tf.keras.Sequential([
+                    tf.keras.layers.Dense(64, activation='relu'),
+                    tf.keras.layers.Dropout(0.2),
+                    tf.keras.layers.Dense(32, activation='relu'),
+                    tf.keras.layers.Dense(1)
+                ])
+                model.compile(optimizer='adam', loss='mse', metrics=['mae'])
+                return model
+            
+            self.has_tensorflow = True
+        except ImportError:
+            self.has_tensorflow = False
+            
         self.classification_models = {
             'random_forest': RandomForestClassifier(n_estimators=100, random_state=42),
             'xgboost': XGBClassifier(random_state=42),
             'logistic_regression': LogisticRegression(random_state=42),
-            'svm': SVC(random_state=42),
-            'tensorflow_nn': create_tf_classifier()
+            'svm': SVC(random_state=42)
         }
+        
+        if self.has_tensorflow:
+            self.classification_models['tensorflow_nn'] = create_tf_classifier()
         
         self.regression_models = {
             'random_forest': RandomForestRegressor(n_estimators=100, random_state=42),
