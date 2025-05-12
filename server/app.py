@@ -60,27 +60,27 @@ def analyze_data():
     global stored_df
     if stored_df is None:
         return jsonify({'error': 'No data available'}), 400
-        
+
     # Convert categorical columns to numeric
     for column in stored_df.select_dtypes(include='object').columns:
         stored_df[column] = stored_df[column].astype('category').cat.codes
-        
+
     # Generate correlation matrix
     correlation_matrix = stored_df.corr()
-    
+
     # Create plots
     plt.figure(figsize=(12, 8))
     sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm')
     heatmap_path = os.path.join(IMAGES_FOLDER, 'correlation_heatmap.png')
     plt.savefig(heatmap_path)
     plt.close()
-    
+
     # Generate pairplot
     sns.pairplot(stored_df)
     pairplot_path = os.path.join(IMAGES_FOLDER, 'pairplot.png')
     plt.savefig(pairplot_path)
     plt.close()
-    
+
     return jsonify({
         'correlation_matrix': correlation_matrix.to_dict(),
         'plots': ['correlation_heatmap.png', 'pairplot.png']
@@ -175,10 +175,10 @@ def run_predictions():
     try:
         data = request.json
         model_name = data.get('model_name')
-        
+
         if not model_name:
             return jsonify({'error': 'No model selected'}), 400
-            
+
         if stored_df is None:
             return jsonify({'error': 'No data available'}), 400
 
@@ -186,28 +186,28 @@ def run_predictions():
         model_path = os.path.join('server/saved_models', model_name)
         import joblib
         model = joblib.load(model_path)
-        
+
         # Get feature columns (all except target)
         problem_type = 'classification' if 'classification' in model_name else 'regression'
         X = stored_df.copy()
-        
+
         # Make predictions
         predictions = model.predict(X)
-        
+
         # Add predictions to dataframe
         df_with_predictions = stored_df.copy()
         df_with_predictions['predicted_value'] = predictions
-        
+
         # Save results to CSV
         output_path = os.path.join('server/uploads', 'predictions.csv')
         df_with_predictions.to_csv(output_path, index=False)
-        
+
         # Return both predictions and file URL
         return jsonify({
             'predictions': df_with_predictions.to_dict('records'),
             'csv_url': '/download/predictions.csv'
         })
-        
+
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -226,7 +226,7 @@ def train_models():
         data = request.json
         target_column = data.get('target_column')
         problem_type = data.get('problem_type', 'classification')
-        
+
         if target_column not in stored_df.columns:
             return jsonify({'error': f'Target column {target_column} not found'}), 400
 
@@ -241,11 +241,11 @@ def train_models():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-
+stored_df = stored_df.drop(columns=columns)
+    return jsonify({
         'data': stored_df.to_dict(),
         'message': 'Columns removed successfully'
     }), 200
-
 
 @app.route('/handle-nulls', methods=['POST'])
 def handle_nulls():
