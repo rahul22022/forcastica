@@ -40,22 +40,18 @@ const Upload = () => {
       });
 
       const contentType = response.headers.get("content-type");
+      let data;
+      
       if (response.ok) {
-        let data;
-        if (contentType && contentType.indexOf("application/json") !== -1) {
-          data = await response.json();
-        } else {
-          const text = await response.text();
-          try {
+        try {
+          if (contentType && contentType.indexOf("application/json") !== -1) {
+            data = await response.json();
+          } else {
+            const text = await response.text();
             data = JSON.parse(text);
-          } catch (parseError) {
-            console.error('Response is not JSON:', text);
-            throw new Error('Server returned invalid JSON response');
           }
-        }
-        setResponseMessage(data.message || 'Upload successful');
-
-        setFileDetails({
+          setResponseMessage(data.message || 'Upload successful');
+          setFileDetails({
           filename: uploadedFile.name,
           size: (uploadedFile.size / 1024).toFixed(2),
         });
