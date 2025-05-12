@@ -149,6 +149,66 @@ def remove_columns():
     return jsonify({
 
 
+@app.route('/list-models', methods=['GET'])
+def list_models():
+    """List all saved models"""
+    try:
+        models = []
+        for file in os.listdir('server/saved_models'):
+            if file.endswith('.joblib'):
+                models.append(file)
+        return jsonify({'models': models})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/run-predictions', methods=['POST'])
+def run_predictions():
+    """Run predictions using selected model"""
+    global stored_df
+    try:
+        data = request.json
+        model_name = data.get('model_name')
+        
+        if not model_name:
+            return jsonify({'error': 'No model selected'}), 400
+            
+        if stored_df is None:
+            return jsonify({'error': 'No data available'}), 400
+
+        # Load the model
+        model_path = os.path.join('server/saved_models', model_name)
+        import joblib
+        model = joblib.load(model_path)
+        
+        # Get feature columns (all except target)
+        problem_type = 'classification' if 'classification' in model_name else 'regression'
+        X = stored_df.copy()
+        
+        # Make predictions
+        predictions = model.predict(X)
+        
+        # Add predictions to dataframe
+        df_with_predictions = stored_df.copy()
+        df_with_predictions['predicted_value'] = predictions
+        
+        # Save results to CSV
+        output_path = os.path.join('server/uploads', 'predictions.csv')
+        df_with_predictions.to_csv(output_path, index=False)
+        
+        # Return both predictions and file URL
+        return jsonify({
+            'predictions': df_with_predictions.to_dict('records'),
+            'csv_url': '/download/predictions.csv'
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/download/<filename>')
+def download_file(filename):
+    """Download a file from the uploads directory"""
+    return send_from_directory('server/uploads', filename, as_attachment=True)
+
 @app.route('/train-models', methods=['POST'])
 def train_models():
     global stored_df

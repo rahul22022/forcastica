@@ -10,6 +10,7 @@ const Upload = lazy(() => import('./pages/upload'));
 const Analyze = lazy(() => import('./pages/analyze'));
 const Analysis = lazy(() => import('./pages/analysis'));
 const ModelSelection = lazy(() => import('./pages/modelSelection'));
+const Predictions = lazy(() => import('./pages/predictions'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 const App = () => {
@@ -22,6 +23,7 @@ const App = () => {
         <Route path="/analyze" element={<Analyze />} />
         <Route path="/analysis" element={<Analysis />} />
         <Route path="/model-selection" element={<ModelSelection />} />
+        <Route path="/predictions" element={<Predictions />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>
