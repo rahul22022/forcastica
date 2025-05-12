@@ -32,8 +32,7 @@ class ModelTrainer:
             'random_forest': RandomForestRegressor(n_estimators=100, random_state=42),
             'xgboost': XGBRegressor(random_state=42),
             'linear_regression': LinearRegression(),
-            'svr': SVR(),
-            'tensorflow_nn': create_tf_regressor()
+            'svr': SVR()
         }
 
     def prepare_data(self, X, y, test_size=0.2):
