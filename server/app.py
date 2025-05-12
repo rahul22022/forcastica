@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify, send_from_directory, make_response
+from model_trainer import ModelTrainer
 from flask_cors import CORS
 import os
 import io
@@ -146,6 +147,34 @@ def remove_columns():
 
     stored_df = stored_df.drop(columns=columns)
     return jsonify({
+
+
+@app.route('/train-models', methods=['POST'])
+def train_models():
+    global stored_df
+    if stored_df is None:
+        return jsonify({'error': 'No data available'}), 400
+
+    try:
+        data = request.json
+        target_column = data.get('target_column')
+        problem_type = data.get('problem_type', 'classification')
+        
+        if target_column not in stored_df.columns:
+            return jsonify({'error': f'Target column {target_column} not found'}), 400
+
+        X = stored_df.drop(columns=[target_column])
+        y = stored_df[target_column]
+
+        trainer = ModelTrainer()
+        results = trainer.train_and_evaluate_all_models(X, y, problem_type)
+
+        return jsonify({'results': results})
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
         'data': stored_df.to_dict(),
         'message': 'Columns removed successfully'
     }), 200
