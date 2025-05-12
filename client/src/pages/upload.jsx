@@ -12,6 +12,14 @@ const Upload = () => {
   const [nullCounts, setNullCounts] = useState({});
   const navigate = useNavigate();
 
+  // Fetch available files on component mount
+  React.useEffect(() => {
+    fetch('/list-files')
+      .then(response => response.json())
+      .then(data => setAvailableFiles(data.files))
+      .catch(error => console.error('Error fetching files:', error));
+  }, []);
+
   const handleFileChange = async (event) => {
     const selectedFile = event.target.files[0];
     if (!selectedFile) return;
@@ -63,15 +71,50 @@ const Upload = () => {
 
     {/* Upload Section */}
     <section className="p-10">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Upload a CSV File</h1>
+      <div className="max-w-2xl mx-auto">
+        <h1 className="text-2xl font-bold text-white mb-8">Upload a CSV File</h1>
 
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xl font-semibold">Data Selection</h3>
-            <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">
-              {availableFiles.length} {availableFiles.length === 1 ? 'file' : 'files'}
-            </span>
+        <div className="bg-white p-6 rounded-lg shadow-md mb-8">
+          <h3 className="text-xl font-semibold mb-6">Choose File</h3>
+          
+          <div className="space-y-6">
+            {/* New File Upload */}
+            <div>
+              <h4 className="text-lg font-medium mb-3">Upload New File</h4>
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
+                <input
+                  type="file"
+                  accept=".csv"
+                  onChange={handleFileChange}
+                  className="block w-full text-sm text-gray-500
+                    file:mr-4 file:py-2 file:px-4
+                    file:rounded-full file:border-0
+                    file:text-sm file:font-semibold
+                    file:bg-orange-50 file:text-orange-700
+                    hover:file:bg-orange-100"
+                />
+              </div>
+            </div>
+
+            {/* Select Existing File */}
+            <div>
+              <h4 className="text-lg font-medium mb-3">Select Existing File</h4>
+              <select 
+                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                onChange={(e) => {
+                  if (e.target.value) {
+                    const formData = new FormData();
+                    formData.append('file', e.target.value);
+                    handleFileChange({ target: { files: [new File([formData], e.target.value)] } });
+                  }
+                }}
+              >
+                <option value="">Select a file</option>
+                {availableFiles.map((filename, index) => (
+                  <option key={index} value={filename}>{filename}</option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <div className="mb-8">
