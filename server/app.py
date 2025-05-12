@@ -300,20 +300,33 @@ def handle_nulls():
     data = request.json
     columns = data.get('columns', [])
     action = data.get('action')
+    original_file = data.get('filename')
 
-    if action == 'remove':
-        stored_df = stored_df.dropna(subset=columns)
-    elif action == 'mean':
-        stored_df[columns] = stored_df[columns].fillna(
-            stored_df[columns].mean())
-    elif action == 'mode':
-        stored_df[columns] = stored_df[columns].fillna(
-            stored_df[columns].mode().iloc[0])
+    try:
+        if action == 'remove':
+            stored_df = stored_df.dropna(subset=columns)
+        elif action == 'mean':
+            stored_df[columns] = stored_df[columns].fillna(
+                stored_df[columns].mean())
+        elif action == 'mode':
+            stored_df[columns] = stored_df[columns].fillna(
+                stored_df[columns].mode().iloc[0])
 
-    return jsonify({
-        'data': stored_df.to_dict(),
-        'message': 'Null values handled successfully'
-    }), 200
+        # Save processed file with _v1 suffix
+        new_filename = None
+        if original_file:
+            base_name = original_file.rsplit('.', 1)[0]
+            new_filename = f"{base_name}_v1.csv"
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], new_filename)
+            stored_df.to_csv(file_path, index=False)
+
+        return jsonify({
+            'data': stored_df.to_dict(),
+            'message': 'Null values handled successfully',
+            'processed_file': new_filename
+        }), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
 from file_manager import FileManager

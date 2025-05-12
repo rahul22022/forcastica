@@ -55,6 +55,7 @@ const Analysis = () => {
 
   const handleNullValues = async (action) => {
     try {
+      const originalFile = sessionStorage.getItem('currentFile');
       const response = await fetch('/handle-nulls', {
         method: 'POST',
         headers: {
@@ -62,7 +63,8 @@ const Analysis = () => {
         },
         body: JSON.stringify({ 
           columns: selectedColumns,
-          action: action 
+          action: action,
+          filename: originalFile
         }),
       });
 
@@ -70,6 +72,11 @@ const Analysis = () => {
         const result = await response.json();
         setData(result.data);
         setMessage(`Null values handled with ${action}`);
+        
+        // Store processed filename for model training
+        if (result.processed_file) {
+          sessionStorage.setItem('processedFile', result.processed_file);
+        }
       }
     } catch (error) {
       setMessage('Error handling null values: ' + error.message);
