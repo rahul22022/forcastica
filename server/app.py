@@ -76,15 +76,9 @@ def analyze_data():
     plt.savefig(heatmap_path)
     plt.close()
 
-    # Generate pairplot
-    sns.pairplot(stored_df)
-    pairplot_path = os.path.join(IMAGES_FOLDER, 'pairplot.png')
-    plt.savefig(pairplot_path)
-    plt.close()
-
     return jsonify({
         'correlation_matrix': correlation_matrix.to_dict(),
-        'plots': ['correlation_heatmap.png', 'pairplot.png']
+        'plots': ['correlation_heatmap.png']
     })
 
 @app.route('/select-model', methods=['POST'])
