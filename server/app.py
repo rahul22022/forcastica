@@ -544,6 +544,13 @@ def generate_statistics():
             if file.endswith('.png'):
                 os.remove(os.path.join(IMAGES_FOLDER, file))
 
+        # Calculate correlation metrics
+        correlation_metrics = {}
+        numeric_cols = df.select_dtypes(include=['int64', 'float64']).columns
+        if len(numeric_cols) > 0:
+            correlation_matrix = df[numeric_cols].corr()
+            correlation_metrics = correlation_matrix.to_dict()
+
         generated_images = []
 
         for column in df.columns:
@@ -563,7 +570,8 @@ def generate_statistics():
 
         return jsonify({
             'message': 'Statistics and plots generated',
-            'images': generated_images
+            'images': generated_images,
+            'correlation_metrics': correlation_metrics
         }), 200
 
     except Exception as e:

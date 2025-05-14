@@ -6,6 +6,7 @@ const Analyze = () => {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [correlationMetrics, setCorrelationMetrics] = useState(null);
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -73,6 +74,14 @@ const Analyze = () => {
                 />
               </div>
             </div>
+            {correlationMetrics && (
+              <div className="mb-8">
+                <h3 className="text-xl font-semibold mb-4">Correlation Metrics</h3>
+                <div className="bg-white rounded shadow p-4">
+                  <pre>{JSON.stringify(correlationMetrics, null, 2)}</pre>
+                </div>
+              </div>
+            )}
             <h3 className="text-xl font-semibold mb-4">Distribution Charts</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {images.map((src, index) => (
