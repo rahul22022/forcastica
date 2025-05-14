@@ -196,12 +196,18 @@ def run_predictions():
     try:
         import shap
         data = request.json
+        if not data:
+            return jsonify({'error': 'No request data provided'}), 400
+            
         model_name = data.get('model_name')
         problem_type = data.get('problem_type', 'classification')
         target_column = data.get('target_column')
 
         if not model_name:
             return jsonify({'error': 'No model selected'}), 400
+            
+        if stored_df is None:
+            return jsonify({'error': 'No dataset loaded. Please upload data first.'}), 400
 
         # Extract target variable from model name (e.g., "status_classification" -> "status")
         target_column = model_name.split('_')[0] if '_' in model_name else target_column

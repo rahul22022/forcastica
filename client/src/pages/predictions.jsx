@@ -45,6 +45,7 @@ const Predictions = () => {
         },
         body: JSON.stringify({
           model_name: selectedModel,
+          problem_type: selectedType,
           target_column: selectedModel.split('_')[0]  // Use first part of model name as target
         }),
       });
