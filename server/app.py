@@ -22,8 +22,10 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 
 UPLOAD_FOLDER = 'uploads'
 IMAGES_FOLDER = 'images'
+SAVED_MODELS_FOLDER = 'saved_models'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(IMAGES_FOLDER, exist_ok=True)
+os.makedirs(os.path.join('server', SAVED_MODELS_FOLDER), exist_ok=True)
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
@@ -179,7 +181,8 @@ def list_models():
     """List all saved models"""
     try:
         models = []
-        for file in os.listdir('server/saved_models'):
+        models_dir = os.path.join('server', SAVED_MODELS_FOLDER)
+        for file in os.listdir(models_dir):
             if file.endswith('.joblib'):
                 models.append(file)
         return jsonify({'models': models})
