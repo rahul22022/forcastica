@@ -301,7 +301,7 @@ def save_cleansed():
     filename = data.get('filename', 'cleansed_data.csv')
     
     # Ensure cleansed_data directory exists
-    cleansed_dir = os.path.join('server', 'cleansed_data')
+    cleansed_dir = os.path.join('cleansed_data')
     os.makedirs(cleansed_dir, exist_ok=True)
     
     save_path = os.path.join(cleansed_dir, filename)
