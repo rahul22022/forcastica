@@ -44,7 +44,8 @@ const Predictions = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model_name: selectedModel
+          model_name: selectedModel,
+          target_column: selectedModel.split('_')[0]  // Use first part of model name as target
         }),
       });
 
