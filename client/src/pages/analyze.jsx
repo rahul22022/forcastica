@@ -62,7 +62,19 @@ const Analyze = () => {
         )}
 
         {!loading && !error && images.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <>
+            <div className="mb-8">
+              <h3 className="text-xl font-semibold mb-4">Correlation Heatmap</h3>
+              <div className="bg-white rounded shadow p-4">
+                <img
+                  src="/images/correlation_heatmap.png"
+                  alt="Correlation Heatmap"
+                  className="w-full h-auto rounded object-contain"
+                />
+              </div>
+            </div>
+            <h3 className="text-xl font-semibold mb-4">Distribution Charts</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {images.map((src, index) => (
               <div key={index} className="bg-white rounded shadow p-4">
                 <img
@@ -76,7 +88,8 @@ const Analyze = () => {
                 </p>
               </div>
             ))}
-          </div>
+            </div>
+          </>
         )}
       </main>
 
