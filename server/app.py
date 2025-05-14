@@ -142,24 +142,37 @@ def remove_columns():
     if stored_df is None:
         return jsonify({'error': 'No data available'}), 400
 
-    data = request.json
-    columns = data.get('columns', [])
-    original_file = data.get('filename', '')
+    try:
+        data = request.json
+        columns = data.get('columns', [])
+        original_file = data.get('filename', '')
 
-    stored_df = stored_df.drop(columns=columns)
-    
-    # Save processed file with _v2 suffix
-    if original_file:
-        base_name = original_file.rsplit('.', 1)[0]
-        new_filename = f"{base_name}_v2.csv"
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], new_filename)
-        stored_df.to_csv(file_path, index=False)
-        
-    return jsonify({
-        'data': stored_df.to_dict(),
-        'message': 'Columns removed successfully',
-        'processed_file': new_filename
-    }), 200
+        # Filter out columns that don't exist
+        valid_columns = [col for col in columns if col in stored_df.columns]
+        if valid_columns:
+            stored_df = stored_df.drop(columns=valid_columns)
+
+        # Save processed file in cleansed_data directory
+        new_filename = None
+        if original_file:
+            base_name = original_file.rsplit('.', 1)[0]
+            new_filename = f"{base_name}_v1.csv"
+            
+            # Ensure cleansed_data directory exists
+            cleansed_dir = os.path.join('server', 'cleansed_data')
+            os.makedirs(cleansed_dir, exist_ok=True)
+            
+            file_path = os.path.join(cleansed_dir, new_filename)
+            stored_df.to_csv(file_path, index=False)
+
+        return jsonify({
+            'data': stored_df.to_dict(),
+            'message': 'Columns removed successfully',
+            'processed_file': new_filename
+        }), 200
+    except Exception as e:
+        print(f"Error in remove_columns: {str(e)}")
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/list-models', methods=['GET'])
 def list_models():
@@ -339,7 +352,12 @@ def handle_nulls():
         if original_file:
             base_name = original_file.rsplit('.', 1)[0]
             new_filename = f"{base_name}_v1.csv"
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], new_filename)
+            
+            # Ensure cleansed_data directory exists
+            cleansed_dir = os.path.join('server', 'cleansed_data')
+            os.makedirs(cleansed_dir, exist_ok=True)
+            
+            file_path = os.path.join(cleansed_dir, new_filename)
             stored_df.to_csv(file_path, index=False)
 
         return jsonify({
