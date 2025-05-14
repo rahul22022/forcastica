@@ -202,12 +202,14 @@ def run_predictions():
 
         if not model_name:
             return jsonify({'error': 'No model selected'}), 400
-
-        # Extract target variable from model name (e.g., "status_classification" -> "status")
-        target_column = model_name.split('_')[0] if '_' in model_name else target_column
-        
-        if target_column not in stored_df.columns:
-            return jsonify({'error': f'Target column {target_column} not found in dataset'}), 400
+            
+        if not target_column:
+            # Try to infer target column from model name
+            if '_classification' in model_name:
+                # Use last column as target for classification
+                target_column = stored_df.columns[-1]
+            else:
+                return jsonify({'error': 'Target column not specified'}), 400
 
         if stored_df is None:
             return jsonify({'error': 'No data available'}), 400
