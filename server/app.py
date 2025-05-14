@@ -191,9 +191,11 @@ def run_predictions():
     """Run predictions using selected model"""
     global stored_df
     try:
+        import shap
         data = request.json
         model_name = data.get('model_name')
         problem_type = data.get('problem_type', 'classification')
+        target_column = data.get('target_column')
 
         if not model_name:
             return jsonify({'error': 'No model selected'}), 400
@@ -216,8 +218,32 @@ def run_predictions():
         if model is None:
             return jsonify({'error': 'Invalid model selected'}), 400
 
-        X = stored_df.copy()
-        predictions = model.predict(X)
+        # Prepare data
+        X = stored_df.drop(columns=[target_column])
+        y = stored_df[target_column]
+        
+        # Split data
+        from sklearn.model_selection import train_test_split
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        
+        # Train model
+        model.fit(X_train, y_train)
+        
+        # Make predictions
+        predictions = model.predict(X_test)
+        
+        # Calculate SHAP values
+        explainer = shap.TreeExplainer(model) if hasattr(model, 'predict_proba') else shap.KernelExplainer(model.predict, X_train)
+        shap_values = explainer.shap_values(X_test[:100])  # Limit to 100 samples for performance
+        
+        # Generate SHAP summary plot
+        plt.figure()
+        if isinstance(shap_values, list):
+            shap_values = shap_values[1]  # For binary classification
+        shap.summary_plot(shap_values, X_test[:100], show=False)
+        shap_plot_path = os.path.join(IMAGES_FOLDER, f'shap_summary_{timestamp}.png')
+        plt.savefig(shap_plot_path)
+        plt.close()
 
         # Save the trained model
         import joblib

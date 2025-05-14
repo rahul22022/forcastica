@@ -211,6 +211,19 @@ const Predictions = () => {
                       </div>
                     </div>
                   )}
+                  
+                  {results.shap_plot && (
+                    <div className="mt-6">
+                      <h4 className="text-lg font-medium mb-3">SHAP Feature Importance</h4>
+                      <div className="bg-white p-4 rounded-lg shadow">
+                        <img 
+                          src={results.shap_plot} 
+                          alt="SHAP Values" 
+                          className="max-w-full h-auto mx-auto"
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )
