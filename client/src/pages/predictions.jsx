@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -9,9 +10,9 @@ const Predictions = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [columns, setColumns] = useState([]);
+  const [trainingResults, setTrainingResults] = useState(null);
 
   useEffect(() => {
-    // Fetch current data to get columns
     const fetchColumns = async () => {
       try {
         const response = await fetch('/current-data');
@@ -28,8 +29,9 @@ const Predictions = () => {
 
   const handleTrainAndPredict = async () => {
     setLoading(true);
+    setMessage('Training models and generating predictions... This may take a few minutes.');
     try {
-      // First train the model
+      // Train models
       const trainResponse = await fetch('/train-models', {
         method: 'POST',
         headers: {
@@ -46,7 +48,10 @@ const Predictions = () => {
         throw new Error('Training failed');
       }
 
-      // Then run predictions
+      const trainData = await trainResponse.json();
+      setTrainingResults(trainData.results);
+
+      // Run predictions
       const predictResponse = await fetch('/run-predictions', {
         method: 'POST',
         headers: {
@@ -109,6 +114,7 @@ const Predictions = () => {
                 >
                   <option value="">Choose a problem type</option>
                   <option value="classification">Classification</option>
+                  <option value="regression">Regression</option>
                   <option value="time_series">Time Series</option>
                 </select>
               </div>
@@ -147,6 +153,12 @@ const Predictions = () => {
                         <option value="xgboost">XGBoost</option>
                         <option value="svm">Support Vector Machine</option>
                       </>
+                    ) : selectedType === 'regression' ? (
+                      <>
+                        <option value="linear_regression">Linear Regression</option>
+                        <option value="random_forest">Random Forest</option>
+                        <option value="xgboost">XGBoost</option>
+                      </>
                     ) : (
                       <>
                         <option value="arima">ARIMA</option>
@@ -171,6 +183,31 @@ const Predictions = () => {
           {message && (
             <div className="mb-6 p-4 bg-blue-50 text-blue-700 rounded-md">
               {message}
+            </div>
+          )}
+
+          {trainingResults && (
+            <div className="bg-white rounded-lg shadow p-6 mb-6">
+              <h3 className="text-xl font-semibold mb-4">Training Results</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {Object.entries(trainingResults).map(([model, metrics]) => (
+                  <div key={model} className="p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                    <h5 className="text-lg font-medium text-primary mb-2">{model}</h5>
+                    <div className="space-y-1">
+                      {Object.entries(metrics).map(([metric, value]) => (
+                        metric !== 'confusion_matrix' && (
+                          <div key={metric} className="flex justify-between items-center">
+                            <span className="text-gray-600">{metric}:</span>
+                            <span className="font-medium">
+                              {typeof value === 'number' ? value.toFixed(4) : value}
+                            </span>
+                          </div>
+                        )
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
