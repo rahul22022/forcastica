@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -32,24 +31,24 @@ const ModelSelection = () => {
     try {
       setLoading(true);
       setMessage('Training models... This may take a few minutes.');
-      
+
       const response = await fetch('/train-models', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          target_column: targetVariable,
-          problem_type: predictionType,
+          target_column: targetVariable || 'logistic',
+          problem_type: predictionType || 'classification',
           processed_file: sessionStorage.getItem('processedFile')
         }),
       });
-      
+
       const data = await response.json();
       if (response.ok) {
         setTrainingResults(data.results);
         setMessage('Models trained successfully!');
-        
+
         // Only navigate if there's no confusion matrix to display
         if (!data.results.confusion_matrix) {
           navigate('/predictions');
@@ -88,12 +87,12 @@ const ModelSelection = () => {
           <>
             <div className="max-w-7xl mx-auto mb-8">
               <h2 className="text-2xl font-bold mb-6">Data Analysis & Model Selection</h2>
-              
-              
+
+
 
               <div className="max-w-2xl mx-auto bg-white rounded-lg shadow p-6">
                 <h3 className="text-xl font-bold mb-6">Model Configuration</h3>
-                
+
                 <form onSubmit={(e) => { e.preventDefault(); handleTrainModel(); }} className="space-y-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">

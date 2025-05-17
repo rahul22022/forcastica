@@ -31,7 +31,7 @@ mode = "parallel"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd server && FLASK_ENV=development python app.py --port=5000 &"
+args = "cd server && FLASK_ENV=development python app.py --port=5000"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
