@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -56,7 +55,8 @@ const Predictions = () => {
         body: JSON.stringify({
           model_name: selectedModel,
           problem_type: selectedType,
-          target_column: targetVariable
+          target_column: targetVariable,
+          processed_file: sessionStorage.getItem('processedFile')
         }),
       });
 
@@ -218,7 +218,7 @@ const Predictions = () => {
                   />
                 </div>
               )}
-              
+
               {results.shap_plot && (
                 <div className="mt-6">
                   <h4 className="text-lg font-medium mb-3">SHAP Feature Importance</h4>
