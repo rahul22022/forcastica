@@ -1,44 +1,54 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 const Predictions = () => {
-  const [modelsByType, setModelsByType] = useState({
-    classification: [],
-    regression: [],
-    time_series: []
-  });
-  const [selectedModel, setSelectedModel] = useState('');
   const [selectedType, setSelectedType] = useState('');
+  const [targetVariable, setTargetVariable] = useState('');
+  const [selectedModel, setSelectedModel] = useState('');
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [columns, setColumns] = useState([]);
 
   useEffect(() => {
-    // List saved models from the server
-    const fetchModels = async () => {
+    // Fetch current data to get columns
+    const fetchColumns = async () => {
       try {
-        const response = await fetch('/list-models');
+        const response = await fetch('/current-data');
         if (response.ok) {
           const data = await response.json();
-          // Organize models by type
-          const organized = {
-            classification: data.models.filter(m => m.includes('classification')),
-            regression: data.models.filter(m => m.includes('regression')),
-            time_series: data.models.filter(m => m.includes('time_series'))
-          };
-          setModelsByType(organized);
+          setColumns(Object.keys(data.data));
         }
       } catch (error) {
-        setMessage('Error fetching models: ' + error.message);
+        setMessage('Error fetching columns: ' + error.message);
       }
     };
-    fetchModels();
+    fetchColumns();
   }, []);
 
-  const runPredictions = async () => {
+  const handleTrainAndPredict = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/run-predictions', {
+      // First train the model
+      const trainResponse = await fetch('/train-models', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          target_column: targetVariable,
+          problem_type: selectedType,
+          processed_file: sessionStorage.getItem('processedFile')
+        }),
+      });
+
+      if (!trainResponse.ok) {
+        throw new Error('Training failed');
+      }
+
+      // Then run predictions
+      const predictResponse = await fetch('/run-predictions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -46,17 +56,20 @@ const Predictions = () => {
         body: JSON.stringify({
           model_name: selectedModel,
           problem_type: selectedType,
-          target_column: selectedModel.split('_')[0]  // Use first part of model name as target
+          target_column: targetVariable
         }),
       });
 
-      if (response.ok) {
-        const data = await response.json();
+      if (predictResponse.ok) {
+        const data = await predictResponse.json();
         setResults(data);
-        setMessage('Predictions completed successfully!');
+        setMessage('Model trained and predictions completed successfully!');
+      } else {
+        const error = await predictResponse.json();
+        throw new Error(error.error || 'Prediction failed');
       }
     } catch (error) {
-      setMessage('Error running predictions: ' + error.message);
+      setMessage('Error: ' + error.message);
     } finally {
       setLoading(false);
     }
@@ -72,14 +85,13 @@ const Predictions = () => {
           <Link to="/" className="hover:text-orange-400">Home</Link>
           <Link to="/upload" className="hover:text-orange-400">Upload</Link>
           <Link to="/analyze" className="hover:text-orange-400">Analyze</Link>
-          <Link to="/model-selection" className="hover:text-orange-400">Model Selection</Link>
-          <Link to="/predictions" className="hover:text-orange-400">Predictions</Link>
+          <Link to="/predictions" className="hover:text-orange-400">Model & Predictions</Link>
         </nav>
       </header>
 
       <main className="flex-grow p-6">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl font-bold mb-6">Run Predictions</h2>
+          <h2 className="text-2xl font-bold mb-6">Model Training & Predictions</h2>
 
           <div className="bg-white rounded-lg shadow p-6 mb-6">
             <div className="space-y-4">
@@ -101,6 +113,22 @@ const Predictions = () => {
                 </select>
               </div>
 
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Target Variable
+                </label>
+                <select
+                  value={targetVariable}
+                  onChange={(e) => setTargetVariable(e.target.value)}
+                  className="w-full p-2 border rounded-md"
+                >
+                  <option value="">Select target column</option>
+                  {columns.map(column => (
+                    <option key={column} value={column}>{column}</option>
+                  ))}
+                </select>
+              </div>
+
               {selectedType && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -116,34 +144,27 @@ const Predictions = () => {
                       <>
                         <option value="logistic_regression">Logistic Regression</option>
                         <option value="random_forest">Random Forest</option>
+                        <option value="xgboost">XGBoost</option>
                         <option value="svm">Support Vector Machine</option>
-                        <option value="knn">K-Nearest Neighbors</option>
-                        <option value="naive_bayes">Naive Bayes</option>
                       </>
-                    ) : selectedType === 'time_series' ? (
+                    ) : (
                       <>
                         <option value="arima">ARIMA</option>
-                        <option value="sarima">SARIMA</option>
-                        <option value="sarimax">SARIMAX</option>
                         <option value="prophet">Prophet</option>
                         <option value="lstm">LSTM</option>
-                        <option value="gru">GRU</option>
-                        <option value="xgboost">XGBoost Regressor</option>
-                        <option value="random_forest">Random Forest Regressor</option>
-                        <option value="holt_winters">Holt-Winters</option>
                       </>
-                    ) : null}
+                    )}
                   </select>
                 </div>
               )}
             </div>
 
             <button
-              onClick={runPredictions}
-              disabled={!selectedModel || loading}
-              className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:bg-gray-400"
+              onClick={handleTrainAndPredict}
+              disabled={!selectedModel || !targetVariable || loading}
+              className="mt-6 w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:bg-gray-400"
             >
-              {loading ? 'Running Predictions...' : 'Run Predictions'}
+              {loading ? 'Processing...' : 'Train Model & Run Predictions'}
             </button>
           </div>
 
@@ -153,82 +174,70 @@ const Predictions = () => {
             </div>
           )}
 
-          {loading ? (
-            <div className="flex flex-col items-center justify-center p-10">
-              <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-              <p className="text-lg text-gray-700">{message}</p>
-            </div>
-          ) : (
-            results && (
-              <div className="bg-white rounded-lg shadow p-6">
-                <h3 className="text-xl font-semibold mb-4">Prediction Results</h3>
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        {Object.keys(results.predictions[0] || {}).map((header) => (
-                          <th
-                            key={header}
-                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+          {results && !loading && (
+            <div className="bg-white rounded-lg shadow p-6">
+              <h3 className="text-xl font-semibold mb-4">Prediction Results</h3>
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      {Object.keys(results.predictions[0] || {}).map((header) => (
+                        <th
+                          key={header}
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        >
+                          {header}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {results.predictions.map((row, idx) => (
+                      <tr key={idx}>
+                        {Object.values(row).map((value, cellIdx) => (
+                          <td
+                            key={cellIdx}
+                            className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
                           >
-                            {header}
-                          </th>
+                            {typeof value === 'number' ? value.toFixed(4) : value}
+                          </td>
                         ))}
                       </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {results.predictions.map((row, idx) => (
-                        <tr key={idx}>
-                          {Object.values(row).map((value, cellIdx) => (
-                            <td
-                              key={cellIdx}
-                              className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                            >
-                              {typeof value === 'number' ? value.toFixed(4) : value}
-                            </td>
-                          ))}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-                <div className="mt-4 space-y-4">
-                  <a
-                    href={results.csv_url}
-                    download
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700"
-                  >
-                    Download Predictions CSV
-                  </a>
-                  
-                  {results.confusion_matrix && (
-                    <div className="mt-6">
-                      <h4 className="text-lg font-medium mb-3">Confusion Matrix</h4>
-                      <div className="bg-white p-4 rounded-lg shadow">
-                        <img 
-                          src={results.confusion_matrix} 
-                          alt="Confusion Matrix" 
-                          className="max-w-full h-auto mx-auto"
-                        />
-                      </div>
-                    </div>
-                  )}
-                  
-                  {results.shap_plot && (
-                    <div className="mt-6">
-                      <h4 className="text-lg font-medium mb-3">SHAP Feature Importance</h4>
-                      <div className="bg-white p-4 rounded-lg shadow">
-                        <img 
-                          src={results.shap_plot} 
-                          alt="SHAP Values" 
-                          className="max-w-full h-auto mx-auto"
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-            )
+
+              {results.confusion_matrix && (
+                <div className="mt-6">
+                  <h4 className="text-lg font-medium mb-3">Confusion Matrix</h4>
+                  <img 
+                    src={results.confusion_matrix} 
+                    alt="Confusion Matrix" 
+                    className="max-w-full h-auto mx-auto"
+                  />
+                </div>
+              )}
+              
+              {results.shap_plot && (
+                <div className="mt-6">
+                  <h4 className="text-lg font-medium mb-3">SHAP Feature Importance</h4>
+                  <img 
+                    src={results.shap_plot} 
+                    alt="SHAP Values" 
+                    className="max-w-full h-auto mx-auto"
+                  />
+                </div>
+              )}
+
+              <a
+                href={results.csv_url}
+                download
+                className="mt-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700"
+              >
+                Download Predictions CSV
+              </a>
+            </div>
           )}
         </div>
       </main>
