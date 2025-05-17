@@ -199,6 +199,15 @@ def run_predictions():
         if not data:
             return jsonify({'error': 'No request data provided'}), 400
             
+        print("Received prediction request:", data)  # Debug logging
+            
+        if stored_df is None:
+            return jsonify({'error': 'No dataset loaded. Please upload data first.'}), 400
+            
+        model_name = data.get('model_name')
+        if not model_name:
+            return jsonify({'error': 'No model name provided'}), 400
+            
         model_name = data.get('model_name')
         problem_type = data.get('problem_type', 'classification')
         target_column = data.get('target_column')
