@@ -94,7 +94,7 @@ const Analysis = () => {
           <Link to="/upload" className="hover:text-orange-400">Upload</Link>
           <Link to="/analyze" className="hover:text-orange-400">Analyze</Link>
           <Link to="/analysis" className="hover:text-orange-400">Data Analysis</Link>
-          <Link to="/model-selection" className="hover:text-orange-400">Model Selection</Link>
+          <Link to="/predictions" className="hover:text-orange-400">Predictions</Link>
         </nav>
       </header>
 
