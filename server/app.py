@@ -5,6 +5,7 @@ import os
 import io
 import pandas as pd
 import matplotlib
+
 matplotlib.use('Agg')  # Headless backend
 from matplotlib import pyplot as plt
 import seaborn as sns
@@ -13,8 +14,10 @@ import plotly.graph_objects as go
 
 # === Flask Setup ===
 app = Flask(__name__, static_folder='uploads')
-CORS(app, 
-     resources={r"/*": {"origins": "*"}},
+CORS(app,
+     resources={r"/*": {
+         "origins": "*"
+     }},
      methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
      allow_headers=['Content-Type'],
      supports_credentials=True)
@@ -82,6 +85,7 @@ def analyze_data():
         'correlation_matrix': correlation_matrix.to_dict(),
         'plots': ['correlation_heatmap.png']
     })
+
 
 @app.route('/select-model', methods=['POST'])
 def select_model():
@@ -176,6 +180,7 @@ def remove_columns():
         print(f"Error in remove_columns: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
+
 @app.route('/list-models', methods=['GET'])
 def list_models():
     """List all saved models"""
@@ -188,6 +193,7 @@ def list_models():
         return jsonify({'models': models})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
 
 @app.route('/run-predictions', methods=['POST'])
 def run_predictions():
@@ -202,7 +208,8 @@ def run_predictions():
         print("Received prediction request:", data)  # Debug logging
 
         if stored_df is None:
-            return jsonify({'error': 'No dataset loaded. Please upload data first.'}), 400
+            return jsonify(
+                {'error': 'No dataset loaded. Please upload data first.'}), 400
 
         model_name = data.get('model_name')
         if not model_name:
@@ -216,13 +223,18 @@ def run_predictions():
             return jsonify({'error': 'No model selected'}), 400
 
         if stored_df is None:
-            return jsonify({'error': 'No dataset loaded. Please upload data first.'}), 400
+            return jsonify(
+                {'error': 'No dataset loaded. Please upload data first.'}), 400
 
         # Extract target variable from model name (e.g., "status_classification" -> "status")
-        target_column = model_name.split('_')[0] if '_' in model_name else target_column
+        target_column = model_name.split(
+            '_')[0] if '_' in model_name else target_column
 
         if target_column not in stored_df.columns:
-            return jsonify({'error': f'Target column {target_column} not found in dataset'}), 400
+            return jsonify({
+                'error':
+                f'Target column {target_column} not found in dataset'
+            }), 400
 
         if stored_df is None:
             return jsonify({'error': 'No data available'}), 400
@@ -248,7 +260,10 @@ def run_predictions():
 
         # Split data
         from sklearn.model_selection import train_test_split
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        X_train, X_test, y_train, y_test = train_test_split(X,
+                                                            y,
+                                                            test_size=0.2,
+                                                            random_state=42)
 
         # Train model
         model.fit(X_train, y_train)
@@ -257,15 +272,19 @@ def run_predictions():
         predictions = model.predict(X_test)
 
         # Calculate SHAP values
-        explainer = shap.TreeExplainer(model) if hasattr(model, 'predict_proba') else shap.KernelExplainer(model.predict, X_train)
-        shap_values = explainer.shap_values(X_test[:100])  # Limit to 100 samples for performance
+        explainer = shap.TreeExplainer(model) if hasattr(
+            model, 'predict_proba') else shap.KernelExplainer(
+                model.predict, X_train)
+        shap_values = explainer.shap_values(
+            X_test[:100])  # Limit to 100 samples for performance
 
         # Generate SHAP summary plot
         plt.figure()
         if isinstance(shap_values, list):
             shap_values = shap_values[1]  # For binary classification
         shap.summary_plot(shap_values, X_test[:100], show=False)
-        shap_plot_path = os.path.join(IMAGES_FOLDER, f'shap_summary_{timestamp}.png')
+        shap_plot_path = os.path.join(IMAGES_FOLDER,
+                                      f'shap_summary_{timestamp}.png')
         plt.savefig(shap_plot_path)
         plt.close()
 
@@ -297,15 +316,20 @@ def run_predictions():
             plt.ylabel('True Label')
             plt.xlabel('Predicted Label')
 
-            confusion_matrix_path = os.path.join('images', f'confusion_matrix_{timestamp}.png')
+            confusion_matrix_path = os.path.join(
+                'images', f'confusion_matrix_{timestamp}.png')
             plt.savefig(confusion_matrix_path)
             plt.close()
 
         # Return predictions, file URLs and model info
         return jsonify({
-            'predictions': df_with_predictions.to_dict('records'),
-            'csv_url': f'/download/{results_filename}',
-            'confusion_matrix': f'/images/confusion_matrix_{timestamp}.png' if problem_type == 'classification' else None,
+            'predictions':
+            df_with_predictions.to_dict('records'),
+            'csv_url':
+            f'/download/{results_filename}',
+            'confusion_matrix':
+            f'/images/confusion_matrix_{timestamp}.png'
+            if problem_type == 'classification' else None,
             'model_info': {
                 'name': model_name,
                 'type': problem_type,
@@ -317,10 +341,12 @@ def run_predictions():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+
 @app.route('/download/<filename>')
 def download_file(filename):
     """Download a file from the uploads directory"""
     return send_from_directory('server/uploads', filename, as_attachment=True)
+
 
 @app.route('/train-models', methods=['POST'])
 def train_models():
@@ -335,13 +361,16 @@ def train_models():
         processed_file = data.get('processed_file')
 
         # Use processed file if available
-        if processed_file and os.path.exists(os.path.join(app.config['UPLOAD_FOLDER'], processed_file)):
-            df = pd.read_csv(os.path.join(app.config['UPLOAD_FOLDER'], processed_file))
+        if processed_file and os.path.exists(
+                os.path.join(app.config['UPLOAD_FOLDER'], processed_file)):
+            df = pd.read_csv(
+                os.path.join(app.config['UPLOAD_FOLDER'], processed_file))
             if df is not None:
                 stored_df = df
 
         if target_column not in stored_df.columns:
-            return jsonify({'error': f'Target column {target_column} not found'}), 400
+            return jsonify(
+                {'error': f'Target column {target_column} not found'}), 400
 
         X = stored_df.drop(columns=[target_column])
         y = stored_df[target_column]
@@ -353,6 +382,7 @@ def train_models():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
 
 @app.route('/save-cleansed', methods=['POST'])
 def save_cleansed():
@@ -371,10 +401,14 @@ def save_cleansed():
 
     try:
         stored_df.to_csv(save_path, index=False)
-        return jsonify({'message': 'Data saved successfully', 'path': save_path})
+        return jsonify({
+            'message': 'Data saved successfully',
+            'path': save_path
+        })
     except Exception as e:
         print(f"Error saving file: {str(e)}")  # Log the error
         return jsonify({'error': f'Failed to save file: {str(e)}'}), 500
+
 
 @app.route('/handle-nulls', methods=['POST'])
 def handle_nulls():
@@ -423,16 +457,18 @@ from file_manager import FileManager
 
 file_manager = FileManager()
 
+
 @app.route('/list-files', methods=['GET'])
 def list_files():
     try:
-        upload_dir = os.path.join('server', 'uploads')
+        upload_dir = os.path.join('uploads')
         files = [f for f in os.listdir(upload_dir) if f.endswith('.csv')]
         print(f"Found files: {files}")  # Debug log
         return jsonify({'files': files})
     except Exception as e:
         print(f"Error in list_files: {str(e)}")  # Debug log
         return jsonify({'error': str(e), 'files': []})
+
 
 @app.route('/upload', methods=['POST', 'OPTIONS'])
 def upload_file():
@@ -465,7 +501,8 @@ def upload_file():
             if not file.filename.endswith('.csv'):
                 return jsonify({'error': 'Only CSV files are allowed'}), 400
 
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'],
+                                     file.filename)
             file.save(file_path)
         else:
             return jsonify({'error': 'No file provided'}), 400
@@ -476,7 +513,8 @@ def upload_file():
             if df.empty:
                 return jsonify({'error': 'The CSV file is empty'}), 400
         except Exception as e:
-            return jsonify({'error': f'Failed to read CSV file: {str(e)}'}), 400
+            return jsonify({'error':
+                            f'Failed to read CSV file: {str(e)}'}), 400
 
         if file.content_length > 10 * 1024 * 1024:  # 10MB limit
             return jsonify({'error': 'File size exceeds 10MB limit'}), 400
@@ -491,7 +529,8 @@ def upload_file():
 
         try:
             file.save(file_path)
-            was_fixed, final_path = file_manager.validate_and_fix_file(file_path)
+            was_fixed, final_path = file_manager.validate_and_fix_file(
+                file_path)
             if was_fixed:
                 df = pd.read_csv(final_path)
                 return jsonify({
