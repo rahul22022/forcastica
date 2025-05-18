@@ -483,6 +483,7 @@ def upload_file():
 
     try:
         file_path = None
+        file = None
 
         # Check if this is an existing file selection
         if 'filename' in request.form:
@@ -501,9 +502,10 @@ def upload_file():
             if not file.filename.endswith('.csv'):
                 return jsonify({'error': 'Only CSV files are allowed'}), 400
 
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'],
-                                     file.filename)
-            file.save(file_path)
+            if file.content_length > 10 * 1024 * 1024:  # 10MB limit
+                return jsonify({'error': 'File size exceeds 10MB limit'}), 400
+
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
         else:
             return jsonify({'error': 'No file provided'}), 400
 
@@ -513,11 +515,7 @@ def upload_file():
             if df.empty:
                 return jsonify({'error': 'The CSV file is empty'}), 400
         except Exception as e:
-            return jsonify({'error':
-                            f'Failed to read CSV file: {str(e)}'}), 400
-
-        if file.content_length > 10 * 1024 * 1024:  # 10MB limit
-            return jsonify({'error': 'File size exceeds 10MB limit'}), 400
+            return jsonify({'error': f'Failed to read CSV file: {str(e)}'}), 400
 
         # Ensure upload directory exists
         os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
