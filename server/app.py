@@ -11,6 +11,7 @@ from matplotlib import pyplot as plt
 import seaborn as sns
 import plotly.express as px
 import plotly.graph_objects as go
+import yaml
 
 # === Flask Setup ===
 app = Flask(__name__, static_folder='uploads')
@@ -52,7 +53,7 @@ def apply_cors_headers(response):
     return response
 
 
-import yaml
+
 
 
 # === Routes ===
