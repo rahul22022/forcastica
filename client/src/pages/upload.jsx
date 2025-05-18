@@ -105,6 +105,7 @@ const Upload = () => {
                         const file = new File([blob], e.target.value);
                         formData.append('file', file);
 
+                        // First load the file data
                         const response = await fetch('/upload', {
                           method: 'POST',
                           body: formData
@@ -117,6 +118,9 @@ const Upload = () => {
                           setInfo(data.analysis.info || '');
                           setNullCounts(data.analysis.null_counts || {});
                           setResponseMessage('File loaded successfully!');
+
+                          // Store the filename in session storage for analysis
+                          sessionStorage.setItem('currentFile', e.target.value);
 
                           // Trigger analysis after file is loaded
                           const analysisResponse = await fetch('/analyze');
