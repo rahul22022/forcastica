@@ -22,8 +22,24 @@ class FileManager:
     def validate_and_fix_file(self, file_path):
         """Validate and fix common issues in the uploaded CSV file"""
         try:
-            df = pd.read_csv(file_path)
-            fixed = False
+            # First check if file exists and is not empty
+            if not os.path.exists(file_path) or os.path.getsize(file_path) == 0:
+                self.logger.error("File is empty or does not exist")
+                return False, None
+                
+            # Try reading with different encodings if needed
+            for encoding in ['utf-8', 'latin1', 'iso-8859-1']:
+                try:
+                    df = pd.read_csv(file_path, encoding=encoding)
+                    if df.empty or len(df.columns) == 0:
+                        continue
+                    fixed = False
+                    break
+                except:
+                    continue
+            else:
+                self.logger.error("Could not parse CSV file with any encoding")
+                return False, None
             
             # Fix 1: Remove duplicate rows
             initial_rows = len(df)
