@@ -440,6 +440,8 @@ def upload_file():
         return response, 200
 
     try:
+        file_path = None
+        
         # Check if this is an existing file selection
         if 'filename' in request.form:
             filename = request.form['filename']
@@ -448,18 +450,25 @@ def upload_file():
             if not os.path.exists(file_path):
                 return jsonify({'error': f'File {filename} not found'}), 400
                 
-            try:
-                df = pd.read_csv(file_path)
-            except Exception as e:
-                return jsonify({'error': f'Failed to read CSV file: {str(e)}'}), 400
-                
         # Handle new file upload
-        elif 'file' not in request.files:
-            return jsonify({'error': 'No file selected'}), 400
+        elif 'file' in request.files:
+            file = request.files['file']
+            if file.filename == '':
+                return jsonify({'error': 'No file selected'}), 400
+                
+            if not file.filename.endswith('.csv'):
+                return jsonify({'error': 'Only CSV files are allowed'}), 400
+                
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+            file.save(file_path)
+        else:
+            return jsonify({'error': 'No file provided'}), 400
             
-        file = request.files['file']
-        if file.filename == '':
-            return jsonify({'error': 'No file selected'}), 400
+        # Process the file
+        try:
+            df = pd.read_csv(file_path)
+            if df.empty:
+                return jsonify({'error': 'The CSV file is empty'}), 400
 
         if not file.filename.endswith('.csv'):
             return jsonify({'error': 'Only CSV files are allowed'}), 400
