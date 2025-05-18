@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './layout.css';
@@ -72,7 +71,7 @@ const Analysis = () => {
         const result = await response.json();
         setData(result.data);
         setMessage(`Null values handled with ${action}`);
-        
+
         // Store processed filename for model training
         if (result.processed_file) {
           sessionStorage.setItem('processedFile', result.processed_file);
@@ -101,7 +100,7 @@ const Analysis = () => {
       <main className="flex-grow p-6">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-2xl font-bold mb-6">Data Analysis & Manipulation</h2>
-          
+
           {message && (
             <div className="mb-4 p-3 bg-blue-100 text-blue-700 rounded">
               {message}
@@ -138,7 +137,7 @@ const Analysis = () => {
                     >
                       Remove Selected Columns
                     </button>
-                    
+
                     <button
                       onClick={() => handleNullValues('remove')}
                       className="flex-1 bg-yellow-600 text-white px-6 py-3 rounded-lg hover:bg-yellow-700 transition-colors"
@@ -146,7 +145,7 @@ const Analysis = () => {
                       Remove Null Rows
                     </button>
                   </div>
-                  
+
                   <div className="flex gap-4">
                     <button
                       onClick={() => handleNullValues('mean')}
@@ -154,7 +153,7 @@ const Analysis = () => {
                     >
                       Fill with Mean
                     </button>
-                    
+
                     <button
                       onClick={() => handleNullValues('mode')}
                       disabled={selectedColumns.length === 0}
@@ -173,7 +172,7 @@ const Analysis = () => {
                     try {
                       const originalFile = sessionStorage.getItem('currentFile');
                       const filename = originalFile ? `cleansed_${originalFile}` : 'cleansed_data.csv';
-                      
+
                       const response = await fetch('/save-cleansed', {
                         method: 'POST',
                         headers: {
@@ -181,7 +180,7 @@ const Analysis = () => {
                         },
                         body: JSON.stringify({ filename }),
                       });
-                      
+
                       if (response.ok) {
                         const result = await response.json();
                         setMessage('Data saved successfully to cleansed_data directory');
