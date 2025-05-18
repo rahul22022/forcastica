@@ -62,13 +62,14 @@ def upload_file():
         response.headers.add('Access-Control-Allow-Origin', '*')
         response.headers.add('Access-Control-Allow-Headers', '*')
         response.headers.add('Access-Control-Allow-Methods', '*')
-        return response, 200
+        return response
 
     global stored_df
-    result = file_interface.handle_file_upload(request)
-    if result[1] == 200:
-        stored_df = file_interface.stored_df
-    return result
+    response = file_interface.handle_file_upload(request)
+    if isinstance(response, tuple):
+        return response
+    stored_df = file_interface.stored_df
+    return response
 
 @app.route('/analyze', methods=['GET', 'OPTIONS'])
 def generate_statistics():
