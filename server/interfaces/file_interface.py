@@ -29,10 +29,20 @@ class FileInterface:
         try:
             # Handle existing file selection
             if 'filename' in request.form:
-                filename = request.form['filename']
+                filename = request.form['filename'].strip()
+                if not filename:
+                    return jsonify({'error': 'No filename provided'}), 400
+                    
                 file_path = os.path.join(self.upload_folder, filename)
-                response = self._load_existing_file(filename, file_path)
-                return response
+                if not os.path.exists(file_path):
+                    return jsonify({'error': f'File {filename} not found in uploads folder'}), 404
+                    
+                try:
+                    df = pd.read_csv(file_path)
+                    self.stored_df = df
+                    return self._generate_analysis_response(df, filename, file_path)
+                except Exception as e:
+                    return jsonify({'error': f'Error reading file: {str(e)}'}), 500
 
             # Handle new file upload
             elif 'file' in request.files:
