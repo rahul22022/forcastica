@@ -485,18 +485,42 @@ def upload_file():
         file_path = None
         file = None
 
-        # Check if this is an existing file selection
+        # Handle existing file selection from dropdown
         if 'filename' in request.form:
             filename = request.form['filename']
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 
             if not os.path.exists(file_path):
                 return jsonify({'error': f'File {filename} not found'}), 400
-                
-            # Read the existing file directly
+
             try:
                 df = pd.read_csv(file_path)
-                stored_df = df  # Store in global variable
+                stored_df = df
+                # Generate analysis directly for existing file
+                analysis = {
+                    'num_records': f"{len(df):,}",
+                    'columns': df.columns.tolist(),
+                    'column_types': {col: str(df[col].dtype) for col in df.columns},
+                    'unique_analysis': {
+                        column: {
+                            'unique_count': df[column].nunique(),
+                            'total_count': len(df),
+                            'unique_ratio': df[column].nunique() / len(df),
+                            'is_unique_identifier': df[column].nunique() / len(df) > 0.9,
+                            'null_count': df[column].isnull().sum()
+                        } for column in df.columns
+                    },
+                    'info': df.info(buf=io.StringIO()),
+                    'describe': df.describe(include='all').to_dict(),
+                    'null_counts': df.isnull().sum().to_dict(),
+                    'preview': df.head(10).to_dict(orient='records')
+                }
+                return jsonify({
+                    'filename': filename,
+                    'size': os.path.getsize(file_path),
+                    'analysis': analysis,
+                    'message': 'File loaded successfully!'
+                })
             except Exception as e:
                 return jsonify({'error': f'Failed to read CSV file: {str(e)}'}), 400
 
