@@ -51,6 +51,10 @@ def apply_cors_headers(response):
 def home():
     return "🚀 Forcastica Flask API ready."
 
+@app.route('/list-files')
+def list_files():
+    return file_interface.list_files()
+
 @app.route('/upload', methods=['POST', 'OPTIONS'])
 def upload_file():
     if request.method == 'OPTIONS':
