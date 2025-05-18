@@ -492,33 +492,49 @@ def upload_file():
                 return jsonify({'error': f'File {filename} not found'}), 400
 
             try:
-                df = pd.read_csv(file_path)
+                # Read the CSV file with explicit encoding
+                df = pd.read_csv(file_path, encoding='utf-8')
                 stored_df = df
-                # Generate analysis directly for existing file
+                
+                # Create StringIO buffer for info
+                info_buffer = io.StringIO()
+                df.info(buf=info_buffer)
+                info_str = info_buffer.getvalue()
+                
+                # Generate analysis
                 analysis = {
                     'num_records': f"{len(df):,}",
                     'columns': df.columns.tolist(),
                     'column_types': {col: str(df[col].dtype) for col in df.columns},
                     'unique_analysis': {
                         column: {
-                            'unique_count': df[column].nunique(),
+                            'unique_count': int(df[column].nunique()),
                             'total_count': len(df),
-                            'unique_ratio': df[column].nunique() / len(df),
-                            'is_unique_identifier': df[column].nunique() / len(df) > 0.9,
-                            'null_count': df[column].isnull().sum()
+                            'unique_ratio': float(df[column].nunique() / len(df)),
+                            'is_unique_identifier': bool(df[column].nunique() / len(df) > 0.9),
+                            'null_count': int(df[column].isnull().sum())
                         } for column in df.columns
                     },
-                    'info': df.info(buf=io.StringIO()),
+                    'info': info_str,
                     'describe': df.describe(include='all').to_dict(),
                     'null_counts': df.isnull().sum().to_dict(),
                     'preview': df.head(10).to_dict(orient='records')
                 }
+                
                 return jsonify({
                     'filename': filename,
                     'size': os.path.getsize(file_path),
                     'analysis': analysis,
                     'message': 'File loaded successfully!'
                 })
+            except UnicodeDecodeError:
+                # Try alternative encoding if UTF-8 fails
+                try:
+                    df = pd.read_csv(file_path, encoding='latin1')
+                    stored_df = df
+                    # ... same analysis code as above ...
+                except Exception as e:
+                    return jsonify({'error': f'Failed to read CSV file: {str(e)}'}), 400
             except Exception as e:
                 return jsonify({'error': f'Failed to read CSV file: {str(e)}'}), 400
 
