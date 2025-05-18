@@ -100,10 +100,14 @@ const Upload = () => {
                   onChange={async (e) => {
                     if (e.target.value) {
                       try {
+                        // Get the selected filename
+                        const filename = e.target.value;
+                        
+                        // Create a FormData object
                         const formData = new FormData();
-                        const blob = new Blob([''], { type: 'text/csv' });
-                        const file = new File([blob], e.target.value);
-                        formData.append('file', file);
+                        
+                        // Append the filename as a field
+                        formData.append('filename', filename);
 
                         // First load the file data
                         const response = await fetch('/upload', {
