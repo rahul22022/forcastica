@@ -1,20 +1,14 @@
 from flask import Flask, request, jsonify, send_from_directory, make_response
-from model_trainer import ModelTrainer
 from flask_cors import CORS
-import os
-import io
-import pandas as pd
+from interfaces.file_interface import FileInterface
+from interfaces.analysis_interface import AnalysisInterface
 import matplotlib
-
-matplotlib.use('Agg')  # Headless backend
-from matplotlib import pyplot as plt
-import seaborn as sns
-import plotly.express as px
-import plotly.graph_objects as go
-import yaml
+matplotlib.use('Agg')
 
 # === Flask Setup ===
 app = Flask(__name__, static_folder='uploads')
+file_interface = FileInterface(app)
+analysis_interface = AnalysisInterface(app)
 CORS(app,
      resources={r"/*": {
          "origins": "*"
@@ -473,17 +467,14 @@ def list_files():
 
 @app.route('/upload', methods=['POST', 'OPTIONS'])
 def upload_file():
-    global stored_df
-
     if request.method == 'OPTIONS':
         response = make_response()
         response.headers.add('Access-Control-Allow-Origin', '*')
         response.headers.add('Access-Control-Allow-Headers', '*')
         response.headers.add('Access-Control-Allow-Methods', '*')
         return response, 200
-
-    try:
-        # Handle existing file selection from dropdown
+        
+    return file_interface.handle_file_upload(request)
         if 'filename' in request.form:
             filename = request.form['filename']
             file_path = os.path.join('server', 'uploads', filename)
@@ -677,17 +668,10 @@ def upload_file():
 
 @app.route('/analyze', methods=['GET', 'OPTIONS'])
 def generate_statistics():
-    global stored_df
-
     if request.method == 'OPTIONS':
         return '', 204
-
-    df = stored_df
-    if df is None:
-        return jsonify({'error': 'No data uploaded yet'}), 400
-
-    try:
-        # Clean up existing images
+        
+    return analysis_interface.generate_statistics(file_interface.stored_df)
         for file in os.listdir(IMAGES_FOLDER):
             if file.endswith('.png'):
                 os.remove(os.path.join(IMAGES_FOLDER, file))
