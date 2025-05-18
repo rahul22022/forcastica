@@ -470,13 +470,12 @@ def upload_file():
             return jsonify({'error': 'No file provided'}), 400
             
         # Process the file
-        try:
-            df = pd.read_csv(file_path)
+        df = pd.read_csv(file_path)
             if df.empty:
                 return jsonify({'error': 'The CSV file is empty'}), 400
-
-        if not file.filename.endswith('.csv'):
-            return jsonify({'error': 'Only CSV files are allowed'}), 400
+                
+        except Exception as e:
+            return jsonify({'error': f'Failed to read CSV file: {str(e)}'}), 400
 
         if file.content_length > 10 * 1024 * 1024:  # 10MB limit
             return jsonify({'error': 'File size exceeds 10MB limit'}), 400
