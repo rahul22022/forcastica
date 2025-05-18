@@ -159,11 +159,11 @@ def remove_columns():
         if original_file:
             base_name = original_file.rsplit('.', 1)[0]
             new_filename = f"{base_name}_v1.csv"
-            
+
             # Ensure cleansed_data directory exists
             cleansed_dir = os.path.join('server', 'cleansed_data')
             os.makedirs(cleansed_dir, exist_ok=True)
-            
+
             file_path = os.path.join(cleansed_dir, new_filename)
             stored_df.to_csv(file_path, index=False)
 
@@ -198,29 +198,29 @@ def run_predictions():
         data = request.json
         if not data:
             return jsonify({'error': 'No request data provided'}), 400
-            
+
         print("Received prediction request:", data)  # Debug logging
-            
+
         if stored_df is None:
             return jsonify({'error': 'No dataset loaded. Please upload data first.'}), 400
-            
+
         model_name = data.get('model_name')
         if not model_name:
             return jsonify({'error': 'No model name provided'}), 400
-            
+
         model_name = data.get('model_name')
         problem_type = data.get('problem_type', 'classification')
         target_column = data.get('target_column')
 
         if not model_name:
             return jsonify({'error': 'No model selected'}), 400
-            
+
         if stored_df is None:
             return jsonify({'error': 'No dataset loaded. Please upload data first.'}), 400
 
         # Extract target variable from model name (e.g., "status_classification" -> "status")
         target_column = model_name.split('_')[0] if '_' in model_name else target_column
-        
+
         if target_column not in stored_df.columns:
             return jsonify({'error': f'Target column {target_column} not found in dataset'}), 400
 
@@ -245,21 +245,21 @@ def run_predictions():
         # Prepare data
         X = stored_df.drop(columns=[target_column])
         y = stored_df[target_column]
-        
+
         # Split data
         from sklearn.model_selection import train_test_split
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-        
+
         # Train model
         model.fit(X_train, y_train)
-        
+
         # Make predictions
         predictions = model.predict(X_test)
-        
+
         # Calculate SHAP values
         explainer = shap.TreeExplainer(model) if hasattr(model, 'predict_proba') else shap.KernelExplainer(model.predict, X_train)
         shap_values = explainer.shap_values(X_test[:100])  # Limit to 100 samples for performance
-        
+
         # Generate SHAP summary plot
         plt.figure()
         if isinstance(shap_values, list):
@@ -287,16 +287,16 @@ def run_predictions():
             from sklearn.metrics import confusion_matrix
             import seaborn as sns
             import matplotlib.pyplot as plt
-            
+
             y_true = stored_df[target_column]
             conf_matrix = confusion_matrix(y_true, predictions)
-            
+
             plt.figure(figsize=(10, 8))
             sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues')
             plt.title('Confusion Matrix')
             plt.ylabel('True Label')
             plt.xlabel('Predicted Label')
-            
+
             confusion_matrix_path = os.path.join('images', f'confusion_matrix_{timestamp}.png')
             plt.savefig(confusion_matrix_path)
             plt.close()
@@ -333,7 +333,7 @@ def train_models():
         target_column = data.get('target_column')
         problem_type = data.get('problem_type', 'classification')
         processed_file = data.get('processed_file')
-        
+
         # Use processed file if available
         if processed_file and os.path.exists(os.path.join(app.config['UPLOAD_FOLDER'], processed_file)):
             df = pd.read_csv(os.path.join(app.config['UPLOAD_FOLDER'], processed_file))
@@ -359,16 +359,16 @@ def save_cleansed():
     global stored_df
     if stored_df is None:
         return jsonify({'error': 'No data available'}), 400
-        
+
     data = request.json
     filename = data.get('filename', 'cleansed_data.csv')
-    
+
     # Ensure cleansed_data directory exists
     cleansed_dir = os.path.join('cleansed_data')
     os.makedirs(cleansed_dir, exist_ok=True)
-    
+
     save_path = os.path.join(cleansed_dir, filename)
-    
+
     try:
         stored_df.to_csv(save_path, index=False)
         return jsonify({'message': 'Data saved successfully', 'path': save_path})
@@ -402,11 +402,11 @@ def handle_nulls():
         if original_file:
             base_name = original_file.rsplit('.', 1)[0]
             new_filename = f"{base_name}_v1.csv"
-            
+
             # Ensure cleansed_data directory exists
             cleansed_dir = os.path.join('server', 'cleansed_data')
             os.makedirs(cleansed_dir, exist_ok=True)
-            
+
             file_path = os.path.join(cleansed_dir, new_filename)
             stored_df.to_csv(file_path, index=False)
 
@@ -446,34 +446,34 @@ def upload_file():
 
     try:
         file_path = None
-        
+
         # Check if this is an existing file selection
         if 'filename' in request.form:
             filename = request.form['filename']
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            
+
             if not os.path.exists(file_path):
                 return jsonify({'error': f'File {filename} not found'}), 400
-                
+
         # Handle new file upload
         elif 'file' in request.files:
             file = request.files['file']
             if file.filename == '':
                 return jsonify({'error': 'No file selected'}), 400
-                
+
             if not file.filename.endswith('.csv'):
                 return jsonify({'error': 'Only CSV files are allowed'}), 400
-                
+
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
             file.save(file_path)
         else:
             return jsonify({'error': 'No file provided'}), 400
-            
+
         # Process the file
-        df = pd.read_csv(file_path)
+        try:
+            df = pd.read_csv(file_path)
             if df.empty:
                 return jsonify({'error': 'The CSV file is empty'}), 400
-                
         except Exception as e:
             return jsonify({'error': f'Failed to read CSV file: {str(e)}'}), 400
 
