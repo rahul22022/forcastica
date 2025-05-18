@@ -14,9 +14,13 @@ class FileInterface:
     def list_files(self):
         try:
             files = [f for f in os.listdir(self.upload_folder) if f.endswith('.csv')]
-            return jsonify({'files': files})
+            response = jsonify({'files': files})
+            response.headers.add('Access-Control-Allow-Origin', '*')
+            return response
         except Exception as e:
-            return jsonify({'error': str(e), 'files': []})
+            response = jsonify({'error': str(e), 'files': []})
+            response.headers.add('Access-Control-Allow-Origin', '*')
+            return response
 
     def handle_file_upload(self, request):
         try:
