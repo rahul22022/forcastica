@@ -23,9 +23,9 @@ CORS(app,
      supports_credentials=True)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 
-UPLOAD_FOLDER = 'uploads'
-IMAGES_FOLDER = 'images'
-SAVED_MODELS_FOLDER = 'saved_models'
+UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads')
+IMAGES_FOLDER = os.path.join(os.path.dirname(__file__), 'images')
+SAVED_MODELS_FOLDER = os.path.join(os.path.dirname(__file__), 'saved_models')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(IMAGES_FOLDER, exist_ok=True)
 os.makedirs(SAVED_MODELS_FOLDER, exist_ok=True)
