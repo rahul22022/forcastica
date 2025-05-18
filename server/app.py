@@ -492,6 +492,13 @@ def upload_file():
 
             if not os.path.exists(file_path):
                 return jsonify({'error': f'File {filename} not found'}), 400
+                
+            # Read the existing file directly
+            try:
+                df = pd.read_csv(file_path)
+                stored_df = df  # Store in global variable
+            except Exception as e:
+                return jsonify({'error': f'Failed to read CSV file: {str(e)}'}), 400
 
         # Handle new file upload
         elif 'file' in request.files:
@@ -506,47 +513,31 @@ def upload_file():
                 return jsonify({'error': 'File size exceeds 10MB limit'}), 400
 
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+            file.save(file_path)
+            
+            try:
+                df = pd.read_csv(file_path)
+                stored_df = df  # Store in global variable
+            except Exception as e:
+                return jsonify({'error': f'Failed to read CSV file: {str(e)}'}), 400
         else:
             return jsonify({'error': 'No file provided'}), 400
 
-        # Process the file
-        try:
-            df = pd.read_csv(file_path)
-            if df.empty:
-                return jsonify({'error': 'The CSV file is empty'}), 400
-        except Exception as e:
-            return jsonify({'error': f'Failed to read CSV file: {str(e)}'}), 400
+        if df.empty:
+            return jsonify({'error': 'The CSV file is empty'}), 400
 
-        # Ensure upload directory exists
-        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-
-        # Ensure upload directory exists
-        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-
-        try:
-            file.save(file_path)
-            was_fixed, final_path = file_manager.validate_and_fix_file(
-                file_path)
+        # For new file uploads, validate and fix if needed
+        if file:
+            was_fixed, final_path = file_manager.validate_and_fix_file(file_path)
             if was_fixed:
                 df = pd.read_csv(final_path)
+                stored_df = df
                 return jsonify({
                     'message': 'File uploaded and fixed successfully',
                     'fixed': True,
                     'original_file': file.filename,
                     'fixed_file': os.path.basename(final_path)
                 })
-            else:
-                df = pd.read_csv(file_path)
-        except Exception as e:
-            return jsonify({'error': f'Failed to save file: {str(e)}'}), 500
-
-        try:
-            df = pd.read_csv(file_path)
-        except Exception as e:
-            return jsonify({'error':
-                            f'Failed to read CSV file: {str(e)}'}), 400
 
         if df.empty:
             return jsonify({'error': 'The CSV file is empty'}), 400
