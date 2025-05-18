@@ -20,7 +20,7 @@ CORS(app,
      supports_credentials=True)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 
-UPLOAD_FOLDER = 'uploads'
+UPLOAD_FOLDER = os.path.join('server', 'uploads')
 IMAGES_FOLDER = 'images'
 SAVED_MODELS_FOLDER = 'saved_models'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -426,7 +426,7 @@ file_manager = FileManager()
 @app.route('/list-files', methods=['GET'])
 def list_files():
     try:
-        files = [f for f in os.listdir('server/uploads') if f.endswith('.csv')]
+        files = [f for f in os.listdir(UPLOAD_FOLDER) if f.endswith('.csv')]
         return jsonify({'files': files})
     except Exception as e:
         return jsonify({'error': str(e), 'files': []})
