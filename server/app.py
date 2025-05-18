@@ -520,11 +520,15 @@ def upload_file():
         # Ensure upload directory exists
         os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-        if file:  # Only save if this is a new file upload
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-            os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+
+        # Ensure upload directory exists
+        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+        try:
             file.save(file_path)
-            was_fixed, final_path = file_manager.validate_and_fix_file(file_path)
+            was_fixed, final_path = file_manager.validate_and_fix_file(
+                file_path)
             if was_fixed:
                 df = pd.read_csv(final_path)
                 return jsonify({
@@ -539,13 +543,13 @@ def upload_file():
             return jsonify({'error': f'Failed to save file: {str(e)}'}), 500
 
         try:
-            print(f"Reading file from: {file_path}")  # Debug log
             df = pd.read_csv(file_path)
-            if df.empty:
-                return jsonify({'error': 'The CSV file is empty'}), 400
         except Exception as e:
-            print(f"Error reading file: {str(e)}")  # Debug log
-            return jsonify({'error': f'Failed to read CSV file: {str(e)}'}), 400
+            return jsonify({'error':
+                            f'Failed to read CSV file: {str(e)}'}), 400
+
+        if df.empty:
+            return jsonify({'error': 'The CSV file is empty'}), 400
 
         # Analyze unique values in columns
         unique_analysis = {}
