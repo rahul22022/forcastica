@@ -4,8 +4,8 @@ import os
 import logging
 
 class FileManager:
-    def __init__(self, upload_folder='server/uploads'):
-        self.upload_folder = upload_folder
+    def __init__(self, upload_folder='uploads'):
+        self.upload_folder = os.path.join('server', upload_folder)
         os.makedirs(upload_folder, exist_ok=True)
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger(__name__)

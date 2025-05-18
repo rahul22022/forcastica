@@ -426,11 +426,12 @@ file_manager = FileManager()
 @app.route('/list-files', methods=['GET'])
 def list_files():
     try:
-        files = file_manager.list_uploaded_files()
+        upload_dir = os.path.join('server', 'uploads')
+        files = [f for f in os.listdir(upload_dir) if f.endswith('.csv')]
+        print(f"Found files: {files}")  # Debug log
         return jsonify({'files': files})
     except Exception as e:
-        # Log the error for debugging
-        print(f"Error in list_files: {str(e)}")
+        print(f"Error in list_files: {str(e)}")  # Debug log
         return jsonify({'error': str(e), 'files': []})
 
 @app.route('/upload', methods=['POST', 'OPTIONS'])
