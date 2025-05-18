@@ -486,7 +486,7 @@ def upload_file():
         # Handle existing file selection from dropdown
         if 'filename' in request.form:
             filename = request.form['filename']
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file_path = os.path.join('server', 'uploads', filename)
             
             if not os.path.exists(file_path):
                 return jsonify({'error': f'File {filename} not found'}), 400
